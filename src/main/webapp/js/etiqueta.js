@@ -457,22 +457,29 @@ class Etiqueta {
     reset = () => {
         this.state.entity = this.emptyEntity();
     }
+    
     cargarEtiquetas = async () => {
-        const usuario = localStorage.getItem('usuario');
-        try {
-            const response = await fetch(`${backend}/etiquetas/4-0258-0085`);
-            const data = await response.json();
-            this.state.etiquetas = data;
-            this.renderizarPaginaConEtiquetas();
-            const loadingSpinner = document.querySelector('.spinner-border');
-            loadingSpinner.style.display = 'none';
-            const table = document.getElementById('tablaEtiquetas');
-            table.style.display = 'table';
-        } catch (error) {
-            console.log('Error al cargar la lista de etiquetas:', error);
-        }
+    const usuario = localStorage.getItem('usuario');
+    try {
+        const requestOptions = {
+            method: 'GET',
+            headers: new Headers({
+                "ngrok-skip-browser-warning": "69420",
+            })
+        };
 
+        const response = await fetch(`${backend}/etiquetas/4-0258-0085`, requestOptions);
+        const data = await response.json();
+        this.state.etiquetas = data;
+        this.renderizarPaginaConEtiquetas();
+        const loadingSpinner = document.querySelector('.spinner-border');
+        loadingSpinner.style.display = 'none';
+        const table = document.getElementById('tablaEtiquetas');
+        table.style.display = 'table';
+    } catch (error) {
+        console.log('Error al cargar la lista de etiquetas:', error);
     }
+}
 
     cambiarEstadoEtiqueta = (etiquetaId, nuevoEstado) => {
         const url = `${backend}/etiquetas/cambiarEstado/${etiquetaId}/${nuevoEstado}`;
