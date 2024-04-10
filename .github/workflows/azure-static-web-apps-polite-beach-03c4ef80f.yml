@@ -32,7 +32,6 @@ jobs:
           api_location: "src/main/java/resources/" # Api source code path - optional
           output_location: "/" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
-          function_language: "node"
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
