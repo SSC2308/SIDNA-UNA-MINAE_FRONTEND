@@ -7,7 +7,6 @@ import jakarta.ws.rs.core.Response;
 import logic.Usuario;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.sql.SQLException;
