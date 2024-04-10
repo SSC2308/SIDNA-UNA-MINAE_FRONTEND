@@ -1,5 +1,5 @@
 //const backend = "https://needed-eagle-curious.ngrok-free.app/MINAE/minae";
-const backend = "https://needed-eagle-curious.ngrok-free.app/MINAE/minae";
+const backend = "https://corsproxy.io/?https://needed-eagle-curious.ngrok-free.app/MINAE/minae";
 class App {
     dom;
     modal;
