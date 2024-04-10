@@ -1,5 +1,5 @@
 //const backend = "https://needed-eagle-curious.ngrok-free.app/MINAE/minae";
-const backend = "https://polite-beach-03c4ef80f.5.azurestaticapps.net/minae";
+const backend = "https://needed-eagle-curious.ngrok-free.app/MINAE/minae";
 class App {
     dom;
     modal;
