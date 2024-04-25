@@ -333,6 +333,25 @@ select {
     border-radius: 100%;
 }
 
+#selectEtiqueta {
+    text-align-last: center;
+    color: #fff;
+    border-color: #343a40;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"%3E%3Cpath d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"%3E%3C/path%3E%3C/svg%3E');
+    background-repeat: no-repeat, repeat;
+    background-position: right .7em top 50%, 0 0;
+    background-size: .65em auto, 100%;
+}
+
+#pills-containerModal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 input.Alta {
     background-color: #b81d13;
     box-shadow: 0em 0px 0px 5px #b81d13;

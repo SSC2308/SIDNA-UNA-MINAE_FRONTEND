@@ -89,6 +89,7 @@
     background-color: #ffffff;
     width: 42px;
     height: 25px;
+    z-index: 6;
     margin-bottom: 55px;
     margin-right: 8px;
     border-radius: 100px;
@@ -197,6 +198,73 @@ select {; /* Ancho personalizado */
     padding: 0;
     margin: 0;
     cursor: pointer;
+}
+.daterangepicker {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #ffffff;
+    border: 1px solid #d1d1d1;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Etiquetas de inicio y fin */
+.daterangepicker .daterangepicker_start_label,
+.daterangepicker .daterangepicker_end_label {
+    color: #333333;
+    font-size: 14px;
+}
+
+.daterangepicker .applyBtn {
+    background-color: #1c2858;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.daterangepicker .applyBtn:hover {
+    background-color: #1c2858;
+}
+
+.daterangepicker .applyBtn:disabled {
+    background-color: #cccccc;
+    color: #1c2858;
+}
+
+.daterangepicker .cancelBtn:disabled {
+    background-color: #cccccc;
+    color: #cdab68;
+}
+
+.daterangepicker td.available {
+    font-size: 14px;
+}
+
+.daterangepicker th,
+.daterangepicker td {
+    font-size: 14px;
+}
+
+.daterangepicker .cancelBtn {
+    background-color: #cdab68;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.daterangepicker .cancelBtn:hover {
+    background-color: #cdab68;
+}
+
+.daterangepicker td.active,
+.daterangepicker td.active:hover,
+.daterangepicker td.active.active,
+.daterangepicker td.active.active:hover {
+    background-color: #1c2858;
+    color: #ffffff;
 }
 
 .required-field-error {
@@ -314,7 +382,7 @@ select {; /* Ancho personalizado */
     }
 
     #buscar{
-            width: 40px !important;
+        width: 40px !important;
     }
 
     #desmarcarTodo{

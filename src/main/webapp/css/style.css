@@ -233,6 +233,15 @@ header ul li a {
     border-radius: 0 72px 0 0;
 }
 
+.screen__background__shape5 {
+    height: 680px;
+    width: 670px;
+    background: #FFF;
+    top: -50px;
+    right: 120px;
+    border-radius: 0 72px 0 0;
+}
+
 .screen__background__shape2 {
     height: 220px;
     width: 220px;
@@ -262,12 +271,12 @@ header ul li a {
 
 .login {
     width: 320px;
-    padding: 30px;
-    padding-top: 156px;
+    padding: 40px;
+    padding-top: 145px;
 }
 
 .login__field {
-    padding: 20px 0px;
+    padding: 15px 0px;
     position: relative;
 }
 
@@ -281,10 +290,10 @@ header ul li a {
     border: none;
     border-bottom: 2px solid #1c2858;
     background: none;
-    padding: 10px;
+    padding: 8px;
     padding-left: 24px;
     font-weight: 700;
-    width: 75%;
+    width: 80%;
     transition: .2s;
 }
 
@@ -353,6 +362,15 @@ header ul li a {
     color: #1c2858;
 }
 
+.button__icon2 {
+    font-size: 24px;
+    margin-right: auto;
+    color: #1c2858;
+}
+
+.button__text2 {
+    margin-left: auto;
+}
 #login {
     position: fixed;
     top: 50%;
@@ -386,8 +404,34 @@ header ul li a {
     transform: translate(-50%, -50%);
 }
 
+.banner {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 20px;
+    width: 80%;
+    max-width: 400px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    z-index: 1000;
+}
 
+#cambiarContrasena2 {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
+#cambiarContrasena3 {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
 .dropdown-content a {
     color: black;
@@ -578,6 +622,99 @@ footer {
     width: 20px;
     height: 20px;
     text-align: center;
+}
+#passwordRequirements2 {
+    position: absolute;
+    background-color: #32385a;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    width: 70%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#passwordRequirements2.show {
+    opacity: 1;
+}
+
+#passwordRequirements2 p {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#passwordRequirements2 ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#passwordRequirements2 ul li {
+    margin-bottom: 3px;
+}
+
+#passwordRequirements2 ul li i {
+    margin-left: 5px;
+}
+
+#passwordRequirements {
+    position: absolute;
+    background-color: #32385a;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    width: 70%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#passwordRequirements.show {
+    opacity: 1;
+}
+
+#passwordRequirements p {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#passwordRequirements ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#passwordRequirements ul li {
+    margin-bottom: 3px;
+}
+
+#passwordRequirements ul li i {
+    margin-left: 5px;
+}
+
+.c-btn {
+    border-color: #1c2858 !important;
+    color: #1c2858 !important;
+}
+
+.c-btn:hover {
+    background-color: #1c2858 !important;
+    color: #FFFFFF !important;
+    border-color: #1c2858 !important;
+}
+
+.c-btn:active {
+    background-color: #1c2858;
+    border-color: #1c2858;
+}
+
+.c-btn:disabled {
+    background-color: transparent;
+    border-color: #1c2858;
+    color: #1c2858;
 }
 
 .box {
