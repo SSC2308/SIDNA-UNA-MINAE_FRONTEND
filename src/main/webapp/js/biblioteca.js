@@ -440,8 +440,8 @@ class Biblioteca {
                     <div class="d-flex justify-content-center">
                     </div>
                 </div>
-                <button class="btn btn-custom-outline-success3" id="generarBtn2" style="display: none; margin-left: 1350px; margin-top: -100px">ACEPTAR</button>
-                <button class="btn btn-custom-outline-success4" id="generarBtn3" style=" display: none; margin-top: -100px">CANCELAR</button>
+                <button class="btn btn-custom-outline-success3" id="generarBtn2" style="display: none; margin-left: 1350px; margin-top: -120px">ACEPTAR</button>
+                <button class="btn btn-custom-outline-success4" id="generarBtn3" style=" display: none; margin-top: -120px">CANCELAR</button>
                 </div>
             </form>
             
