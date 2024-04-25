@@ -492,9 +492,6 @@ input.BajaModal:checked {
         width: 190px !important;
     }
 
-    #dropdwonUsuario{
-        display: none !important;
-    }
 
     #pillsMobile-container {
         display: block;
@@ -617,7 +614,11 @@ input.BajaModal:checked {
     }
 }
 
-
+@media (max-width: 773px) {
+    #dropdwonUsuario{
+         margin-left: 150px; 
+    }
+}
 
 @media (max-width: 385px) {
     #buscar {
