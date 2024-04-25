@@ -1,6 +1,8 @@
 let exportando = false;
 let cambio = false;
 var checkboxesMarcados = [];
+let startDate = '';
+let endDate = '';
 class Biblioteca {
     dom;
     modal;
@@ -75,15 +77,15 @@ class Biblioteca {
             if (opcionFecha) {
                 switch (opcionFecha) {
                     case "ultimoDia":
-                        console.log(fechaActual);
+
                         const ultimoDia = new Date(fechaActual);
                         ultimoDia.setHours(0, 0, 0, 0);
                         ultimoDia.setDate(ultimoDia.getDate() - 1);
-                        console.log(ultimoDia);
+
                         noticiasFiltradas = noticiasFiltradas.filter(noticia => {
                             const [dia, mes, ano] = noticia.fecha.split('/');
                             const fechaNoticia = new Date(`${mes}/${dia}/${ano}`);
-                            console.log('Fecha de la noticia:', fechaNoticia);
+
                             return fechaNoticia >= ultimoDia && fechaNoticia <= fechaActual;
                         });
                         break;
@@ -105,8 +107,14 @@ class Biblioteca {
                             return fechaNoticia >= ultimoMes && fechaNoticia <= fechaActual;
                         });
                         break;
+                    case "customRange":
+                        noticiasFiltradas = noticiasFiltradas.filter(noticia => {
+                            const [dia, mes, ano] = noticia.fecha.split('/');
+                            const fechaNoticia = new Date(`${mes}/${dia}/${ano}`);
+                            return fechaNoticia >= new Date(startDate) && fechaNoticia <= new Date(endDate);
+                        });
+                        break;
                     default:
-
                         break;
                 }
             }
@@ -171,7 +179,38 @@ class Biblioteca {
                     fechaSelect.insertBefore(limpiarFiltroFechaOption, fechaSelect.options[1]);
                 }
             }
-            filtrarNoticias();
+
+            if (fechaSelect.value === "customRange") {
+                initializeDatepicker();
+            } else {
+                filtrarNoticias();
+                $('#tiempoSeleccionado3').data('daterangepicker').remove();
+            }
+            function initializeDatepicker() {
+                $('#tiempoSeleccionado3').daterangepicker({
+                    opens: 'left',
+                    locale: {
+                        format: 'DD-MM-YYYY',
+                        applyLabel: 'Aplicar',
+                        cancelLabel: 'Cancelar',
+                        fromLabel: 'Desde',
+                        toLabel: 'Hasta',
+                        customRangeLabel: 'Rango Personalizado'
+                    },
+                    autoUpdateInput: false
+                });
+
+                $('#tiempoSeleccionado3').on('apply.daterangepicker', function(ev, picker) {
+                    startDate = picker.startDate.format('YYYY-MM-DD');
+                    endDate = picker.endDate.format('YYYY-MM-DD');
+                   filtrarNoticias();
+                    $('#tiempoSeleccionado3').data('daterangepicker').hide();
+                });
+
+                $('#tiempoSeleccionado3').on('cancel.daterangepicker', function(ev, picker) {
+                    $('#tiempoSeleccionado3').data('daterangepicker').remove();
+                });
+            }
         });
 
         buscador.addEventListener('input', () => {
@@ -366,7 +405,7 @@ class Biblioteca {
                     <option value="ultimoDia">Último Día</option>
                     <option value="ultimaSemana">Última Semana</option>
                     <option value="ultimoMes">Último Mes</option>
-                    <option value="ultimoAno">Último Año</option>
+                    <option value="customRange">Rango Fecha</option>
                 </select>
                 </div>
                    <input class="form-control me-2 fontAwesome" id="buscadorEtiqueta" autocomplete="off" type="text" style="width: 100px; margin-left: 200px; height: 38px; border-radius: 5px; border: 1px solid #1c2858;" placeholder="&#xf002; Buscar..."> 
@@ -407,6 +446,7 @@ class Biblioteca {
         
         `;
         $(document).ready(function () {
+
             $('select#tiempoSeleccionado3').change(function () {
                 var text = $(this).find('option:selected').text();
                 var $aux = $('<select/>').append($('<option/>').text(text));
@@ -775,7 +815,7 @@ class Biblioteca {
                          
                         <form action="#" id="formmarcar" class="signup-form">
                             <div class="btn-group mt-4 d-flex justify-content-center">
-                                <button type="submit" id="confirmarb" class="btn btn-outline-primary rounded submit ml-4 mr-3">Confirmar</button>
+                                <button type="submit" id="confirmarb" class="btn btn-outline-primary rounded submit ml-4 mr-3 c-btn">Confirmar</button>
                                 <button type="button" id="cancelarb" class="btn btn-outline-secondary rounded submit">Cancelar</button>
                             </div>
                             <div class="form-group d-md-flex">
@@ -898,6 +938,14 @@ class Biblioteca {
         const bordeColores = ['#1c2858', '#cdab68'];
         const noticiasCoincidentes = document.getElementById('noticiasBiblioteca');
         noticiasCoincidentes.innerHTML = '';
+
+        if (this.state.noticias.length === 0) {
+            const spinner = document.querySelector('.spinner-border');
+            spinner.style.display = 'none';
+            noticiasCoincidentes.innerHTML = '<p style="margin-top: 25%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 24px;">No tienes noticias guardadas.</p>';
+            return;
+        }
+
         for (const [index, noticia] of this.state.noticias.entries()) {
             const {id, titulo, descripcion, prioridad, fuente, enlace, imagen, fechaGuardado, fecha} = noticia;
             const idNoticia = noticia.id;
@@ -1022,7 +1070,7 @@ class Biblioteca {
     cargarBiblioteca = async () => {
         const usuario = localStorage.getItem('usuario');
         try {
-            const response = await fetch(`${backend}/NoticiasMarcadas/4-0258-0085`);
+            const response = await fetch(`${backend}/NoticiasMarcadas/${usuario}`);
             const spinner = document.querySelector('.spinner-border');
             spinner.style.display = 'block';
             const data = await response.json();
@@ -1036,7 +1084,7 @@ class Biblioteca {
     cargarBiblioteca2 = async () => {
         const usuario = localStorage.getItem('usuario');
         try {
-            const response = await fetch(`${backend}/NoticiasMarcadas/4-0258-0085`);
+            const response = await fetch(`${backend}/NoticiasMarcadas/${usuario}`);
             const data = await response.json();
             this.state.noticias = data.reverse();
         } catch (error) {
@@ -1047,7 +1095,8 @@ class Biblioteca {
 
     actualizarPrioridad = (noticiaID, nuevaPrioridad) => {
         cambio = true;
-        const url = `${backend}/NoticiasMarcadas/4-0258-0085/${noticiaID}?input=${nuevaPrioridad}`;
+        const usuario = localStorage.getItem('usuario');
+        const url = `${backend}/NoticiasMarcadas/${usuario}/${noticiaID}?input=${nuevaPrioridad}`;
         fetch(url, {
             method: 'PUT',
             headers: {
@@ -1138,21 +1187,7 @@ class Biblioteca {
         this.modal.hide();
         this.modalexito.show();
     }
-    obtenerNumeroDeMes = async (nombreMes) => {
-        const meses = [
-            "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-        ];
-        // Busca el índice del nombre del mes en el array de meses
-        const indice = meses.indexOf(nombreMes);
-        // Si se encuentra el nombre del mes, devuelve su número (1 al 12)
-        // Si no se encuentra, devuelve -1 como valor predeterminado para indicar que no se encontró
-        if (indice !== -1) {
-            return indice + 1; // Agregamos 1 porque los meses comienzan desde 1 en lugar de 0
-        } else {
-            return -1;
-        }
-    }
+
     load = async () => {
         const form = this.dom.querySelector("#biblioteca #modal #form");
         const formData = new FormData(form);
@@ -1160,8 +1195,7 @@ class Biblioteca {
         for (let [key, value] of formData.entries()) {
             this.entity[key] = value;
         }
-        // Imprime los datos en la consola
-        console.log(this.entity);
+
     }
     createNew = () => {
         cambio = true;
@@ -1283,21 +1317,22 @@ class Biblioteca {
             this.entidad['fuente'] = this.entity.fuente;
             this.entidad['enlace'] = document.getElementById('enlace').value;
             this.entidad['fechaGuardado'] = '2023-10-09';
-            this.entidad['usuarioCedula'] = '4-0258-0085';
+            const usuario = localStorage.getItem('usuario');
+            this.entidad['usuarioCedula'] = usuario;
             this.entidad['imagen'] = imageUrl;
             const etiquetasDescripcion = [];
             descripciones.forEach(descripcion => {
                 etiquetasDescripcion.push({descripcion});
             });
             this.entidad['etiquetas'] = etiquetasDescripcion;
-            const request2 = new Request(`${backend}/NoticiasMarcadas`, {
-                method: 'POST',
+            const request2 = new Request(`${backend}/NoticiasMarcadas/agregar/1`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(this.entidad)
             });
-            console.log(this.entidad);
+
             try {
                 const response = await fetch(request2);
                 if (!response.ok) {
@@ -1835,40 +1870,29 @@ class Biblioteca {
     reset = () => {
         this.state.entity = this.emptyEntity();
     }
-    deleteNoticia = async () => {
-        cambio = true;
+    deleteNoticia = async (event) => {
         event.preventDefault();
+        cambio = true;
+
         const entityId = this.deleteEntity;
-        const request = new Request(`${backend}/NoticiasMarcadas/EtiquetasExternaDelete/${entityId}`, {
-            method: 'POST',
+        const usuario = localStorage.getItem('usuario');
+
+        const requestUrl = `${backend}/NoticiasMarcadas/ExternaDelete/${entityId}/${usuario}`;
+        const requestOptions = {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             }
-        });
+        };
+
         try {
-            const response = await fetch(request);
+            const response = await fetch(requestUrl, requestOptions);
             if (response.ok) {
-                const cedula = "4-0258-0085";
-                const request2 = new Request(`${backend}/NoticiasMarcadas/ExternaDelete/${entityId}/${cedula}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                try {
-                    const response2 = await fetch(request2);
-                    if (response2.ok) {
-                        this.hideModalBorrar();
-                        this.cargarBiblioteca();
-                        this.showModalSuccessBorrar();
-                    } else {
-                        this.hideModalBorrar();
-                        this.showModalErrorBorrar();
-                    }
-                } catch (error) {
-                    console.error("Error al eliminar la entidad:", error);
-                }
+                this.hideModalBorrar();
+                this.cargarBiblioteca();
+                this.showModalSuccessBorrar();
             } else {
+                this.hideModalBorrar();
                 this.showModalErrorBorrar();
             }
         } catch (error) {

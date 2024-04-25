@@ -47,7 +47,8 @@ class Etiqueta {
         this.dom.querySelector("#categorias #modalEditar #formEdit #save").addEventListener('click', () => {
             const etiquetaId = this.dom.querySelector("#categorias #modalEditar #formEdit #etiquetaId").value;
             const descripcion = this.dom.querySelector("#categorias #modalEditar #formEdit #input").value;
-            this.saveEdit(etiquetaId, descripcion);
+            const cedula = this.dom.querySelector("#categorias #modalEditar #formEdit #usuarioId").value;
+            this.saveEdit(etiquetaId, descripcion, cedula);
         });
         this.dom.querySelector("#categorias #modalEditar #close").addEventListener('click', this.cancelarEdit);
         this.dom.querySelector("#categorias #modalErrorEditar #dismissButtonEditar").addEventListener('click', this.hideModalErrorEditar);
@@ -88,7 +89,7 @@ class Etiqueta {
                          
                         <form action="#" id="formmarcar" class="signup-form">
                             <div class="btn-group mt-4 d-flex justify-content-center">
-                                <button type="submit" id="confirm-si" class="btn btn-outline-primary rounded submit ml-4 mr-3">Aceptar</button>
+                                <button type="submit" id="confirm-si" class="btn btn-outline-primary rounded submit ml-4 mr-3 c-btn">Aceptar</button>
                                 <button type="button" id="confirm-no" class="btn btn-outline-secondary rounded submit">Cancelar</button>
                             </div>
                             <div class="form-group d-md-flex">
@@ -159,7 +160,7 @@ class Etiqueta {
   </div>
 </div>
  <div class="table-responsive" style="overflow: auto; max-height: 600px; overflow-y: auto; overflow-x: hidden; background-color: white">
- <div id="tableContainer">
+ <div id="tableContainer" style="margin-top: -5px">
   <table class="table table-fixed" id="tablaEtiquetas" style="display: none">  
   <thead>
         <tr>
@@ -196,7 +197,7 @@ class Etiqueta {
         let tableRows = '';
 
         this.state.etiquetas.forEach((etiqueta, index) => {
-            const {descripcion, etiquetaId, estado, noticiasAsociadas} = etiqueta;
+            const {descripcion, etiquetaId, estado, noticiasAsociadas, usuarioCedula} = etiqueta;
             const isChecked = estado ? 'checked' : '';
             const row = `
     <tr data-row="${index + 1}">
@@ -225,6 +226,8 @@ class Etiqueta {
     </tr>
     `;
             tableRows += row;
+
+
         });
 
         const tableBody = document.querySelector('#tablaEtiquetas tbody');
@@ -246,8 +249,10 @@ class Etiqueta {
         editarBotones.forEach((boton, index) => {
             const etiquetaId = this.state.etiquetas[index].etiquetaId;
             const descripcion = this.state.etiquetas[index].descripcion;
+            const usuarioID = this.state.etiquetas[index].usuarioCedula;
+
             boton.addEventListener('click', () => {
-                this.editarEtiqueta(etiquetaId, descripcion);
+                this.editarEtiqueta(etiquetaId, descripcion, usuarioID);
             });
         });
         toggleSwitches.forEach((toggleSwitch) => {
@@ -273,6 +278,7 @@ class Etiqueta {
         <form action="#" class="signup-form" id="formEdit">
          
           <input type="hidden" id="etiquetaId" name="etiquetaId" value="">
+          <input type="hidden" id="usuarioId" name="usuarioId" value="">
           
           <div class="form-group mb-2">
             <input id="input" type="text" autocomplete="off"  class="form-control" style="border-right-color: white; border-left-color: white; border-top-color: white; border-bottom-color: black">
@@ -294,12 +300,14 @@ class Etiqueta {
         form.reset();
     }
 
-    showEditar = (etiquetaId, descripcion) => {
+    showEditar = (etiquetaId, descripcion, cedula) => {
         this.resetFormEditar();
         const inputField = this.dom.querySelector("#categorias #modalEditar #formEdit #etiquetaId");
         const nombreField = this.dom.querySelector("#categorias #modalEditar #formEdit #input");
+        const usuario = this.dom.querySelector("#categorias #modalEditar #formEdit #usuarioId");
         inputField.value = etiquetaId;
         nombreField.value = descripcion;
+        usuario.value = cedula
 
         this.modalEditar.show();
     }
@@ -314,9 +322,8 @@ class Etiqueta {
         this.modal.hide();
     }
 
-    editarEtiqueta = (etiquetaId, descripcion) => {
-
-        this.showEditar(etiquetaId, descripcion);
+    editarEtiqueta = (etiquetaId, descripcion, cedula) => {
+        this.showEditar(etiquetaId, descripcion, cedula);
 
     }
 
@@ -334,7 +341,25 @@ class Etiqueta {
         const nuevoEstado = event.target.checked;
         const actionMessage = nuevoEstado ? `habilitar` : `deshabilitar`;
         const etiquetaDescriptionElement = document.getElementById('etiqueta-description');
-        etiquetaDescriptionElement.textContent = `Esta seguro que desea ${actionMessage} esta etiqueta: ${etiquetaDescripcion}?`;
+
+        if (etiquetaDescripcion === "Costa Rica" || etiquetaDescripcion === "Medio Ambiente" || etiquetaDescripcion === "Noticia Externa") {
+            const mensaje = document.getElementById('mensaje');
+            toggleSwitch.checked = !nuevoEstado;
+            const modal = this.dom.querySelector("#modalError");
+            const modalFooter = modal.querySelector('.modal-footer');
+            if (modalFooter) {
+                modalFooter.style.display = 'none';
+            }
+            mensaje.textContent = `No se puede ${actionMessage} la etiqueta: ${etiquetaDescripcion}`;
+            this.showModalError();
+            setTimeout(() => {
+                this.hideModalError2();
+            }, 2000);
+            return;
+        } else {
+            etiquetaDescriptionElement.textContent = `¿Está seguro que desea ${actionMessage} esta etiqueta: ${etiquetaDescripcion}?`;
+        }
+
         let clickFueraModal = false;
 
         const modalPromise = new Promise((resolve, reject) => {
@@ -457,32 +482,26 @@ class Etiqueta {
     reset = () => {
         this.state.entity = this.emptyEntity();
     }
-    
     cargarEtiquetas = async () => {
-    const usuario = localStorage.getItem('usuario');
-    try {
-        const requestOptions = {
-            method: 'GET',
-            headers: new Headers({
-                "ngrok-skip-browser-warning": "69420",
-            })
-        };
+        const usuario = localStorage.getItem('usuario');
+        try {
+            const response = await fetch(`${backend}/etiquetas/${usuario}`);
+            const data = await response.json();
+            this.state.etiquetas = data;
+            this.renderizarPaginaConEtiquetas();
+            const loadingSpinner = document.querySelector('.spinner-border');
+            loadingSpinner.style.display = 'none';
+            const table = document.getElementById('tablaEtiquetas');
+            table.style.display = 'table';
+        } catch (error) {
+            console.log('Error al cargar la lista de etiquetas:', error);
+        }
 
-        const response = await fetch(`${backend}/etiquetas/4-0258-0085`, requestOptions);
-        const data = await response.json();
-        this.state.etiquetas = data;
-        this.renderizarPaginaConEtiquetas();
-        const loadingSpinner = document.querySelector('.spinner-border');
-        loadingSpinner.style.display = 'none';
-        const table = document.getElementById('tablaEtiquetas');
-        table.style.display = 'table';
-    } catch (error) {
-        console.log('Error al cargar la lista de etiquetas:', error);
     }
-}
 
     cambiarEstadoEtiqueta = (etiquetaId, nuevoEstado) => {
-        const url = `${backend}/etiquetas/cambiarEstado/${etiquetaId}/${nuevoEstado}`;
+        const usuario = localStorage.getItem('usuario');
+        const url = `${backend}/etiquetas/cambiarEstado/${etiquetaId}/${nuevoEstado}/${usuario}`;
         fetch(url, {
             method: 'PUT',
             headers: {
@@ -491,31 +510,32 @@ class Etiqueta {
         })
             .then((response) => {
                 if (!response.ok) {
-
-                    console.error(`Error al cambiar el estado de la etiqueta: ${response.status}`);
-                    throw new Error('Error al cambiar el estado de la etiqueta');
+                    return response.json().then((data) => {
+                        console.error(`Error al cambiar el estado de la etiqueta: ${response.status}`, data);
+                        throw new Error('Error al cambiar el estado de la etiqueta');
+                    });
                 }
-
                 console.log('Estado de la etiqueta cambiado exitosamente');
             })
             .catch((error) => {
-
                 console.error('Error:', error);
             });
     };
 
     agregarEtiqueta2 = (descripcion) => {
         event.preventDefault();
-        const url = `${backend}/etiquetas/`;
+        const etiquetaId = "1";
+        const url = `${backend}/etiquetas/agregar/${etiquetaId}`;
+        const usuario = localStorage.getItem('usuario');
         const requestBody = {
             descripcion: descripcion,
-            usuarioCedula: "4-0258-0085",
+            usuarioCedula: usuario,
             estado: true
         };
         const options = {
-            method: 'POST',
+            method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify(requestBody)
         };
@@ -537,8 +557,9 @@ class Etiqueta {
             });
     };
 
-    saveEdit = (etiquetaId, descripcion) => {
-        const url = `${backend}/etiquetas/editar/${etiquetaId}?input=${descripcion}`;
+    saveEdit = (etiquetaId, descripcion, cedula) => {
+        const usuario = localStorage.getItem('usuario');
+        const url = `${backend}/etiquetas/editar/${etiquetaId}?input=${descripcion}&cedula=${usuario}`;;
         fetch(url, {
             method: 'PUT',
             headers: {
@@ -682,7 +703,7 @@ class Etiqueta {
                     <p style="font-size: 25px;" class="text-center" id="mensaje">Verifica si la noticia está duplicada o los datos son incorrectos.</p>
                 </div>
                 <div class="modal-footer">
-            <button class="btn btn-success btn-block" id="dismissButton" data-dismiss="modal">Regresar</button>
+            <button class="btn btn-success btn-block" data-dismiss="modal">Regresar</button>
                 </div>
             </div>
             </div>
@@ -886,7 +907,7 @@ class Etiqueta {
 
 
     showModalErrorEtiqueta = () => {
-        // Cargar los datos de la entidad en el formulario del modal
+
         this.modal.hide();
         this.modaletiquetaError.show();
     }

@@ -11,6 +11,7 @@ const apiKeys = [
 let apiKeyActual = 0;
 let busqueda = "";
 let etiquetas = [];
+let mensaje = "";
 sugerencias = [];
 let globalAbortController = new AbortController();
 class Busqueda {
@@ -32,20 +33,65 @@ class Busqueda {
         this.entidad = {};
         this.modal = new bootstrap.Modal(this.dom.querySelector('#modal'));
         this.modalmarcar = new bootstrap.Modal(this.dom.querySelector('#marcar'));
+        this.modalmarcar2 = new bootstrap.Modal(this.dom.querySelector('#marcar2'));
+        this.modalEtiqueta = new bootstrap.Modal(this.dom.querySelector('#modalEtiqueta'));
         this.modalerror = new bootstrap.Modal(this.dom.querySelector('#modalError'));
         this.modalexito = new bootstrap.Modal(this.dom.querySelector('#sucessmodal'));
         this.dom.querySelector("#busqueda #buscar").addEventListener('click', () => {
             this.corresponderPalabraClaveEnNoticias();
         });
         this.dom.querySelector("#busqueda #marcar #formmarcar #marcarb").addEventListener('click', this.add);
+        this.dom.querySelector("#busqueda #marcar2 #formmarcar2 #marcarb2").addEventListener('click', this.add);
         this.dom.querySelector("#busqueda #marcar #formmarcar #marcarcancelarb").addEventListener('click', this.modalmarcarclose);
         this.dom.querySelector("#busqueda #marcar #cancelModal").addEventListener('click', this.hidemodal);
         this.dom.querySelector("#busqueda  #modalError #dismissButton").addEventListener('click', this.hideModalError);
         this.dom.querySelector("#busqueda  #sucessmodal #sucessbuton").addEventListener('click', this.hideModalExito);
         const searchInput = this.dom.querySelector("#search-input");
         const fechaSeleccionar = this.dom.querySelector("#tiempoSeleccionado");
+        const etiquetaAceptarBtn = this.dom.querySelector("#etiquetaAceptar");
+        const etiquetaCancelarBtn = this.dom.querySelector("#etiquetaCancelar");
+
         fechaSeleccionar.addEventListener('change',() =>{
             this.corresponderPalabraClaveEnNoticias();
+        });
+        etiquetaCancelarBtn.addEventListener("click", () => {
+            searchInput.textContent = "";
+        });
+        etiquetaAceptarBtn.addEventListener("click", () => {
+            event.preventDefault();
+            const usuario = localStorage.getItem('usuario');
+            const url = `${backend}/etiquetas/`;
+            const requestBody = {
+                descripcion: mensaje,
+                usuarioCedula: usuario,
+                estado: true
+            };
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            };
+
+            fetch(url, options)
+                .then(response => {
+                    if (!response.ok) {
+                        console.log('Error');
+                        this.dom.querySelector("#mensajeError").textContent = "Verifica si la etiqueta está duplicada o los datos son incorrectos.";
+                        this.showModalError();
+                        searchInput.textContent = "";
+                    } else {
+                        console.log('Etiqueta agregada con éxito');
+                        this.crearBurbuja(mensaje);
+                        searchInput.textContent = "";
+                        this.actualizarTexto();
+                        this.getSugerencias();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la solicitud:', error);
+                });
         });
         searchInput.addEventListener("input", (event) => this.inputCambio(event));
         setTimeout(() => {
@@ -81,6 +127,8 @@ class Busqueda {
             ${this.renderBody()}
             ${this.renderModal()}
             ${this.renderModalMarcar()}
+            ${this.renderModalEtiqueta()}
+            ${this.renderModalMarcar2()}
             ${this.renderModalError()}
             ${this.renderModalSuccess()}
         `;
@@ -164,22 +212,23 @@ class Busqueda {
 
         setTimeout(() => {
             const pillsContainer1 = document.getElementById("pills-container");
+            const pillsContainer3 = document.getElementById("pills-containerModal");
             const pillsContainer2 = document.getElementById("pillsMobile-container");
             const searchInput = document.getElementById("search-input");
             searchInput.addEventListener("keyup", (event) => {
+                    event.preventDefault();
                 if (event.key === "Enter" || event.key === "," || event.key === "-") {
                     event.preventDefault();
                     const searchValue = searchInput.textContent.trim();
                     if (searchValue) {
                         const cleanedValue = searchValue.replace(/[,.-]/g, "").trim();
                         if (cleanedValue) {
-                            this.crearBurbuja(cleanedValue);
-                            searchInput.textContent = "";
-                            this.actualizarTexto();
+                            this.etiquetaModalshow(cleanedValue);
                         }
                     }
                 }
             });
+
             pillsContainer1.addEventListener("click", (event) => {
                 if (event.target.classList.contains("close-icon")) {
                     const pillElement = event.target.parentElement;
@@ -216,6 +265,27 @@ class Busqueda {
                     this.actualizarTexto();
                 }
             });
+            pillsContainer3.addEventListener("click", (event) => {
+                if (event.target.classList.contains("close-icon")) {
+                    const pillElement = event.target.parentElement;
+                    const pillText = pillElement.querySelector(".pill-text").textContent.trim();
+                    pillElement.remove();
+
+                    const selectEtiqueta = document.getElementById('selectEtiqueta');
+
+                        const newOption = document.createElement('option');
+                        newOption.textContent = pillText;
+                        selectEtiqueta.appendChild(newOption);
+                    const etiquetasDescripcion = [];
+                    etiquetasDescripcion.push({ descripcion: 'Costa Rica' });
+                    const pills = pillsContainer3.querySelectorAll('.pill-text');
+                    pills.forEach(pill => {
+                        etiquetasDescripcion.push({ descripcion: pill.textContent.trim() });
+                    });
+                    this.entidad['etiquetas'] = etiquetasDescripcion;
+                    }
+            });
+
             var navegacionPaginacion = document.getElementById('paginationNav');
             var paginaActual = 1;
             const cambiarPagina = (numeroPagina) => {
@@ -365,7 +435,17 @@ class Busqueda {
         pillsContainer1.appendChild(pill1);
         pillsContainer2.appendChild(pill2);
         etiquetas.push(text);
+    }
 
+    crearBurbuja2(text) {
+        const pillsContainer = document.getElementById("pills-containerModal");
+        const pill1 = document.createElement("div");
+        pill1.className = "pill";
+        pill1.innerHTML = `
+        <span class="pill-text">${text}</span>
+        <span class="close-icon">&times;</span>
+    `;
+        pillsContainer.appendChild(pill1);
     }
     async obtenerNoticias(pagina) {
         const noticiasCoincidentes = document.getElementById('noticiasCoincidentes');
@@ -444,6 +524,11 @@ class Busqueda {
                 if (result.source.includes('News ES Euro') ||
                     result.link.includes('www.nacion.com/viva/musica') ||
                     result.link.includes('www.cuerpomente.com/') ||
+                    result.link.includes('https://portalinnova.cl') ||
+                    result.link.includes('https://newsinamerica.com') ||
+                    result.link.includes('https://www.diariocolatino.com/') ||
+                    result.link.includes('https://awsbitlynews.com/') ||
+                    result.link.includes('https://www.areacucuta.com/') ||
                     result.link.includes('www.crhoy.com/entretenimiento/') ||
                     result.link.includes('https://dialogo-americas.com/es/')){
                     continue;
@@ -504,6 +589,11 @@ class Busqueda {
                 const noticias = news.filter(result => !result.source.includes('News ES Euro') &&
                     !result.link.includes('www.nacion.com/viva/musica') &&
                     !result.link.includes('www.cuerpomente.com/') &&
+                    !result.link.includes('https://portalinnova.cl') &&
+                    !result.link.includes('https://www.areacucuta.com/') &&
+                    !result.link.includes('https://www.diariocolatino.com/') &&
+                    !result.link.includes('https://awsbitlynews.com/') &&
+                    !result.link.includes('https://newsinamerica.com') &&
                     !result.link.includes('www.crhoy.com/entretenimiento/'));
                 localStorage.setItem('noticias', JSON.stringify(noticias.slice(0, 24)));
                 localStorage.setItem('ultimaHora', Date.now());
@@ -582,9 +672,8 @@ class Busqueda {
         globalAbortController = new AbortController();
     }
     async corresponderPalabraClaveEnNoticias() {
-        console.log(busqueda);
         if (!busqueda || busqueda.trim() === '') {
-            this.dom.querySelector("#mensajeError").textContent = "Por favor, selecciona una etiqueta antes de buscar";
+            this.dom.querySelector("#mensajeError").textContent = "Por favor, digite una etiqueta antes de buscar";
             this.showModalError();
             return;
         }
@@ -624,7 +713,6 @@ class Busqueda {
     async obtenerSiguienteApiKey(maxIntentos = 3) {
         const apiKey = apiKeys[apiKeyActual];
         apiKeyActual = (apiKeyActual + 1) % apiKeys.length;
-        console.log('API Key usada:', apiKey);
         return apiKey;
     }
     obtenerTiempoQuery(tiempoSeleccionado) {
@@ -810,7 +898,6 @@ class Busqueda {
         } else if (tipo === '2') {
             descripciones = etiquetas;
         } else {
-
             descripciones = [];
         }
 
@@ -819,7 +906,18 @@ class Busqueda {
             const selectedColor = button.value;
             const infoText = `${selectedColor}`;
             button.addEventListener('click', () => {
-                this.modalmarcarshow(titulo, descripcion, newsSource, fuente, infoText, fechaFormateada, imagen, descripciones);
+                if(tipo==='1'){
+                    const pillsContainerModal = this.dom.querySelector('#pills-containerModal');
+                    pillsContainerModal.innerHTML = '';
+                    const agregarEtiquetaBtn = this.dom.querySelector('#agregarEtiquetaBtn');
+                    const selectEtiqueta = this.dom.querySelector('#selectEtiqueta');
+                    selectEtiqueta.style.display = 'none';
+                    agregarEtiquetaBtn.style.display = 'block';
+                    this.modalmarcarshow2(titulo, descripcion, newsSource, fuente, infoText, fechaFormateada, imagen, descripciones);
+                } else {
+                    this.modalmarcarshow(titulo, descripcion, newsSource, fuente, infoText, fechaFormateada, imagen, descripciones);
+                }
+
             });
         });
 
@@ -909,7 +1007,7 @@ class Busqueda {
                 </div>
                         <form action="#" id="formmarcar" class="signup-form">
                             <div class="btn-group mt-4 d-flex justify-content-center">
-                                <button type="submit" id="marcarb" class="btn btn-outline-primary rounded submit ml-4 mr-3">Agregar</button>
+                                <button type="submit" id="marcarb" class="btn btn-outline-primary rounded submit ml-4 mr-3 c-btn">Agregar</button>
                                 <button type="button" id="marcarcancelarb" class="btn btn-outline-secondary rounded submit">Cancelar</button>
                             </div>
                             <div class="form-group d-md-flex">
@@ -921,6 +1019,123 @@ class Busqueda {
         </div>
     `;
     }
+
+    renderModalEtiqueta = () => {
+        return `
+        <div id="modalEtiqueta" class="modal fade" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="cancelModal" class="close d-flex align-items-center justify-content-center" data-bs-dismiss="modal" aria-label="Close" style="font-size: 36px; width: 50px; height: 50px; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); border: 2px solid #ccc; border-radius: 50%;">
+                            <span aria-hidden="true" class="ion-ios-close"></span>
+                        </button>
+                    </div>
+                    <div class="modal-body p-4 py-5 p-md-5">
+                        <div class="text-center">
+                            <img src="images/Minae.png" class="w-50 mx-auto d-block mb-4" alt="...">
+
+                        </div>
+                        <h4 class="text-center mb-2 mt-2" id="mensajeEtiqueta">¿Desea agregar esta Etiqueta?</h4>
+                       
+                        <ul class="ftco-footer-social p-0 text-center">
+                        </ul>
+                         <div class="d-flex align-items-center justify-content-center">
+                </div>
+                        <form action="#" id="formetiqueta" class="signup-form">
+                            <div class="btn-group mt-4 d-flex justify-content-center">
+                                <button type="submit" id="etiquetaAceptar" data-bs-dismiss="modal" class="btn btn-outline-primary rounded submit ml-4 mr-3 c-btn">Agregar</button>
+                                <button type="button" id="etiquetaCancelar" data-bs-dismiss="modal" class="btn btn-outline-secondary rounded submit">Cancelar</button>
+                            </div>
+                            <div class="form-group d-md-flex">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    }
+
+    renderModalMarcar2 = () => {
+        const modalMarcar2 = `
+    <div id="marcar2" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="cancelModal" class="close d-flex align-items-center justify-content-center"  data-bs-dismiss="modal" aria-label="Close" style="font-size: 36px; width: 50px; height: 50px; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); border: 2px solid #ccc; border-radius: 50%;">
+                        <span aria-hidden="true" class="ion-ios-close"></span>
+                    </button>
+                </div>
+                <div class="modal-body p-4 py-5 p-md-5">
+                    <div class="text-center">
+                        <img src="images/Minae.png" class="w-50 mx-auto d-block mb-4" alt="...">
+                    </div>
+                    <h4 class="text-center mb-2 mt-2">¿Desea guardar esta noticia en su biblioteca?</h4>
+                   
+                    <ul class="ftco-footer-social p-0 text-center">
+                    </ul>
+                    <div class="d-flex align-items-center justify-content-center">
+                        <p class="mr-3" style="margin-top: 14px;">Prioridad seleccionada:</p>
+                        <div class="semaforoModal">
+                            <input type="radio" id="radioAlta2" name="rag1" class="AltaModal" value="Alta">
+                            <input type="radio" id="radioMedia2" name="rag1" class="MediaModal" value="Media">
+                            <input type="radio" id="radioBaja2" name="rag1" class="BajaModal" value="Baja">
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-center">
+                        <button id="agregarEtiquetaBtn" class="btn btn-outline-dark ml-2" style="width: 300px; border-color: #ffff">
+                            <i class="fa-solid fa-circle-plus"></i> Etiqueta
+                        </button>
+                        <select class="form-control" id="selectEtiqueta" style="width: 80%;height: 36px; display: none;"></select>
+                    </div>
+                    <div id="pills-containerModal" class="pill-container" style="margin-top: 15px;"></div>
+                    <form action="#" id="formmarcar2" class="signup-form">
+                        <div class="btn-group mt-4 d-flex justify-content-center">
+                            <button type="submit" id="marcarb2" data-bs-dismiss="modal" class="btn btn-outline-primary rounded submit ml-4 mr-3 c-btn">Agregar</button>
+                            <button type="button" id="marcarcancelarb2" data-bs-dismiss="modal" class="btn btn-outline-secondary rounded submit">Cancelar</button>
+                        </div>
+                        <div class="form-group d-md-flex">
+                        </div>
+                    </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        setTimeout(() => {
+            const agregarEtiquetaBtn = this.dom.querySelector('#agregarEtiquetaBtn');
+            const selectEtiqueta = this.dom.querySelector('#selectEtiqueta');
+            const pillsContainerModal = this.dom.querySelector('#pills-containerModal');
+
+            agregarEtiquetaBtn.addEventListener('click', () => {
+                selectEtiqueta.style.display = 'block';
+                agregarEtiquetaBtn.style.display = 'none';
+            });
+            selectEtiqueta.addEventListener('change', (event) => {
+                const selectedOption = event.target.options[event.target.selectedIndex];
+                const text = selectedOption.textContent;
+                this.crearBurbuja2(text);
+                selectEtiqueta.removeChild(selectedOption);
+
+                selectEtiqueta.selectedIndex = 0;
+
+                selectEtiqueta.style.display = 'none';
+                agregarEtiquetaBtn.style.display = 'block';
+
+                const etiquetasDescripcion = [{ descripcion: 'Costa Rica' }];
+
+                const pills = pillsContainerModal.querySelectorAll('.pill-text');
+                pills.forEach(pill => {
+                    etiquetasDescripcion.push({ descripcion: pill.textContent.trim() });
+                });
+
+                this.entidad['etiquetas'] = etiquetasDescripcion;
+            });
+
+        }, 0);
+        return modalMarcar2;
+    }
+
     renderModal = () => {
         return `
 <div id="modal" class="modal fade" tabindex="-1">
@@ -966,8 +1181,8 @@ class Busqueda {
     }
     add = async () => {
         event.preventDefault();
-        const request = new Request(`${backend}/NoticiasMarcadas`, {
-            method: 'POST',
+        const request = new Request(`${backend}/NoticiasMarcadas/agregar/1`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -1008,7 +1223,8 @@ class Busqueda {
 
     getSugerencias() {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", `${backend}/etiquetas/habilitadas/4-0258-0085`, true);
+        const usuario = localStorage.getItem('usuario');
+        xhr.open("GET", `${backend}/etiquetas/habilitadas/${usuario}`, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             if (xhr.status === 200) {
@@ -1081,8 +1297,8 @@ class Busqueda {
         this.entidad['fuente'] = fuente;
         this.entidad['enlace'] = enlace;
         this.entidad['fechaGuardado'] = '2023-11-11';
-        //const usuario = localStorage.getItem('usuario');
-        this.entidad['usuarioCedula'] = '4-0258-0085';
+        const usuario = localStorage.getItem('usuario');
+        this.entidad['usuarioCedula'] = usuario;
         this.entidad['imagen'] = imagen;
         const etiquetasDescripcion = [];
         descripciones.forEach(descripcion => {
@@ -1107,6 +1323,72 @@ class Busqueda {
             radioToSelect.checked = true;
         }
         this.modalmarcar.show();
+    }
+
+    etiquetaModalshow(mensajes){
+        this.dom.querySelector("#mensajeEtiqueta").textContent = "¿Desea guardar esta Etiqueta?\n" + mensajes;
+        this.modalEtiqueta.show();
+        mensaje = mensajes;
+    }
+
+    modalmarcarshow2 = (titulo, descripcion, enlace, fuente, infotext, fecha, imagen, descripciones) => {
+        this.entidad['id'] = '1';
+        this.entidad['titulo'] = titulo;
+        this.entidad['descripcion'] = descripcion;
+        this.entidad['fecha'] = fecha;
+        this.entidad['prioridad'] = infotext;
+        this.entidad['fuente'] = fuente;
+        this.entidad['enlace'] = enlace;
+        this.entidad['fechaGuardado'] = '2023-11-11';
+        const usuario = localStorage.getItem('usuario');
+        this.entidad['usuarioCedula'] = usuario;
+        this.entidad['imagen'] = imagen;
+        const etiquetasDescripcion = [];
+        descripciones.forEach(descripcion => {
+            etiquetasDescripcion.push({descripcion});
+        });
+        this.entidad['etiquetas'] = etiquetasDescripcion;
+        let radioToSelect;
+        switch (infotext) {
+            case "Alta":
+                radioToSelect = document.getElementById('radioAlta2');
+                break;
+            case "Media":
+                radioToSelect = document.getElementById('radioMedia2');
+                break;
+            case "Baja":
+                radioToSelect = document.getElementById('radioBaja2');
+                break;
+            default:
+                break;
+        }
+        if (radioToSelect) {
+            radioToSelect.checked = true;
+        }
+
+        const sugerenciasSelect = sugerencias;
+        const sugerenciasFiltradas = sugerenciasSelect.filter(sugerencia => {
+            return sugerencia.descripcion !== "Medio Ambiente" &&
+                sugerencia.descripcion !== "Costa Rica" &&
+                sugerencia.descripcion !== "Noticia Externa";
+        });
+        const selectEtiqueta = document.getElementById('selectEtiqueta');
+        selectEtiqueta.innerHTML = "";
+
+        const optionDefault = document.createElement('option');
+        optionDefault.disabled = true;
+        optionDefault.selected = true;
+        optionDefault.innerHTML = "Seleccione una Etiqueta <i class='fas fa-caret-down'></i>";
+        selectEtiqueta.appendChild(optionDefault);
+
+        sugerenciasFiltradas.forEach(sugerencia => {
+            const option = document.createElement('option');
+            option.value = sugerencia.id;
+            option.textContent = sugerencia.descripcion;
+            selectEtiqueta.appendChild(option);
+        });
+
+        this.modalmarcar2.show();
     }
     modalmarcarclose = () => {
         this.reset();
