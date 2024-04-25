@@ -287,6 +287,7 @@ class Biblioteca {
             this.cancelarExportar();
         });
         this.dom.querySelector("#generarBtn2").addEventListener('click', () => {
+            event.preventDefault();
             if (checkboxesMarcados.length === 0) {
                 this.dom.querySelector("#mensaje").textContent = "Por favor, selecciona al menos una noticia.";
                 this.modalErrorMensaje.show();
@@ -439,11 +440,11 @@ class Biblioteca {
                     <div class="d-flex justify-content-center">
                     </div>
                 </div>
+                <button class="btn btn-custom-outline-success3" id="generarBtn2" style="display: none; margin-left: 1350px; margin-top: -100px">ACEPTAR</button>
+                <button class="btn btn-custom-outline-success4" id="generarBtn3" style=" display: none; margin-top: -100px">CANCELAR</button>
                 </div>
             </form>
-            <button class="btn btn-custom-outline-success3" id="generarBtn2" style="display: none; margin-left: 1500px">ACEPTAR</button>
-            <button class="btn btn-custom-outline-success4" id="generarBtn3" style=" display: none;">CANCELAR</button>
-        
+            
         `;
         $(document).ready(function () {
 
