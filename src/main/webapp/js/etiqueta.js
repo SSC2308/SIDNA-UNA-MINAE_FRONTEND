@@ -250,9 +250,26 @@ class Etiqueta {
             const etiquetaId = this.state.etiquetas[index].etiquetaId;
             const descripcion = this.state.etiquetas[index].descripcion;
             const usuarioID = this.state.etiquetas[index].usuarioCedula;
+            const noticiasAsociadas = this.state.etiquetas[index].noticiasAsociadas;
 
             boton.addEventListener('click', () => {
-                this.editarEtiqueta(etiquetaId, descripcion, usuarioID);
+                const mensaje = document.getElementById('mensaje');
+                const modal = this.dom.querySelector("#modalError");
+                const modalFooter = modal.querySelector('.modal-footer');
+                if (modalFooter) {
+                    modalFooter.style.display = 'none';
+                }
+                if (noticiasAsociadas === 1) {
+                    mensaje.textContent = `No se puede editar la etiqueta porque tiene 1 noticias asociada`;
+                } else {
+                    mensaje.textContent = `No se puede editar la etiqueta porque tiene ${noticiasAsociadas} noticias asociadas`;
+                }
+                if (noticiasAsociadas > 0) {
+                    this.showModalError();
+                } else {
+                    this.editarEtiqueta(etiquetaId, descripcion, usuarioID);
+                }
+
             });
         });
         toggleSwitches.forEach((toggleSwitch) => {
