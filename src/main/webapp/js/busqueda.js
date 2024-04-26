@@ -60,14 +60,14 @@ class Busqueda {
         etiquetaAceptarBtn.addEventListener("click", () => {
             event.preventDefault();
             const usuario = localStorage.getItem('usuario');
-            const url = `${backend}/etiquetas/`;
+            const url = `${backend}/etiquetas/agregar/1`;
             const requestBody = {
                 descripcion: mensaje,
                 usuarioCedula: usuario,
                 estado: true
             };
             const options = {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
