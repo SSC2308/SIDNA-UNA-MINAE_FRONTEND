@@ -216,7 +216,7 @@ class Busqueda {
             const pillsContainer2 = document.getElementById("pillsMobile-container");
             const searchInput = document.getElementById("search-input");
             searchInput.addEventListener("keyup", (event) => {
-                    event.preventDefault();
+                event.preventDefault();
                 if (event.key === "Enter" || event.key === "," || event.key === "-") {
                     event.preventDefault();
                     const searchValue = searchInput.textContent.trim();
@@ -273,9 +273,9 @@ class Busqueda {
 
                     const selectEtiqueta = document.getElementById('selectEtiqueta');
 
-                        const newOption = document.createElement('option');
-                        newOption.textContent = pillText;
-                        selectEtiqueta.appendChild(newOption);
+                    const newOption = document.createElement('option');
+                    newOption.textContent = pillText;
+                    selectEtiqueta.appendChild(newOption);
                     const etiquetasDescripcion = [];
                     etiquetasDescripcion.push({ descripcion: 'Costa Rica' });
                     const pills = pillsContainer3.querySelectorAll('.pill-text');
@@ -283,7 +283,7 @@ class Busqueda {
                         etiquetasDescripcion.push({ descripcion: pill.textContent.trim() });
                     });
                     this.entidad['etiquetas'] = etiquetasDescripcion;
-                    }
+                }
             });
 
             var navegacionPaginacion = document.getElementById('paginationNav');

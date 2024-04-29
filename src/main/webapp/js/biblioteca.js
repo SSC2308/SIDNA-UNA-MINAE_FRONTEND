@@ -1,5 +1,6 @@
 let exportando = false;
 let cambio = false;
+let click = false;
 var checkboxesMarcados = [];
 let startDate = '';
 let endDate = '';
@@ -50,13 +51,18 @@ class Biblioteca {
             this.solicitarDatos(url);
         });
         const generarBtn = this.dom.querySelector("#generarBtn1");
+        const generarBtnMobile = this.dom.querySelector("#generarBtn4");
         const cancelarBtn = this.dom.querySelector("#generarBtn3");
+        const cancelarBtnMobile = this.dom.querySelector("#generarBtn5");
         const marcarBtn = this.dom.querySelector("#marcarTodo");
         const desmarcarBtn = this.dom.querySelector("#desmarcarTodo");
         const limpiar = this.dom.querySelector("#buscar");
         const buscador = this.dom.querySelector("#buscadorEtiqueta");
         const prioridadSelect = this.dom.querySelector("#tiempoSeleccionado2");
         const fechaSelect = this.dom.querySelector("#tiempoSeleccionado3");
+        const prioridadSelectMobile = this.dom.querySelector("#tiempoSeleccionadoMobile1");
+        const fechaSelectMobile = this.dom.querySelector("#tiempoSeleccionadoMobile2");
+
 
         const filtrarNoticias = async () => {
             if (cambio) {
@@ -143,6 +149,23 @@ class Biblioteca {
             }
         };
 
+        function triggerChangeEvent(element) {
+            const event = new Event("change", { bubbles: true });
+            element.dispatchEvent(event);
+        }
+
+        prioridadSelectMobile.addEventListener("change", function() {
+            const selectedValue = prioridadSelectMobile.value;
+            prioridadSelect.value = selectedValue;
+            triggerChangeEvent(prioridadSelect);
+        });
+
+        fechaSelectMobile.addEventListener("change", function() {
+            const selectedValue = fechaSelectMobile.value;
+            fechaSelect.value = selectedValue;
+            triggerChangeEvent(fechaSelect);
+        });
+
         prioridadSelect.addEventListener('change', () => {
             const limpiarFiltroOption = prioridadSelect.querySelector('option[value="Limpiar filtro"]');
             if (prioridadSelect.value === "Limpiar filtro") {
@@ -158,6 +181,22 @@ class Biblioteca {
                     limpiarFiltroPrioridadOption.textContent = "Limpiar filtro";
                     limpiarFiltroPrioridadOption.style.color = "red";
                     prioridadSelect.insertBefore(limpiarFiltroPrioridadOption, prioridadSelect.options[1]);
+                }
+            }
+            const limpiarFiltroOptionMobile = prioridadSelectMobile.querySelector('option[value="Limpiar filtro"]');
+            if (prioridadSelectMobile.value === "Limpiar filtro") {
+                prioridadSelectMobile.selectedIndex = prioridadSelectMobile.querySelector('option[value=""]').index;
+                if (limpiarFiltroOptionMobile) {
+                    limpiarFiltroOptionMobile.remove();
+                }
+
+            } else {
+                if (!limpiarFiltroOptionMobile) {
+                    const limpiarFiltroPrioridadOption = document.createElement('option');
+                    limpiarFiltroPrioridadOption.value = "Limpiar filtro";
+                    limpiarFiltroPrioridadOption.textContent = "Limpiar filtro";
+                    limpiarFiltroPrioridadOption.style.color = "red";
+                    prioridadSelectMobile.insertBefore(limpiarFiltroPrioridadOption, prioridadSelectMobile.options[1]);
                 }
             }
             filtrarNoticias();
@@ -179,6 +218,21 @@ class Biblioteca {
                     fechaSelect.insertBefore(limpiarFiltroFechaOption, fechaSelect.options[1]);
                 }
             }
+            const limpiarFiltroOptionMobile = fechaSelectMobile.querySelector('option[value="Limpiar filtro"]');
+            if (fechaSelectMobile.value === "Limpiar filtro") {
+                fechaSelectMobile.selectedIndex = fechaSelectMobile.querySelector('option[value=""]').index;
+                if (limpiarFiltroOptionMobile) {
+                    limpiarFiltroOptionMobile.remove();
+                }
+            } else {
+                if (!limpiarFiltroOptionMobile) {
+                    const limpiarFiltroFechaOption = document.createElement('option');
+                    limpiarFiltroFechaOption.value = "Limpiar filtro";
+                    limpiarFiltroFechaOption.textContent = "Limpiar filtro";
+                    limpiarFiltroFechaOption.style.color = "red";
+                    fechaSelectMobile.insertBefore(limpiarFiltroFechaOption, fechaSelectMobile.options[1]);
+                }
+            }
 
             if (fechaSelect.value === "customRange") {
                 initializeDatepicker();
@@ -186,6 +240,7 @@ class Biblioteca {
                 filtrarNoticias();
                 $('#tiempoSeleccionado3').data('daterangepicker').remove();
             }
+
             function initializeDatepicker() {
                 $('#tiempoSeleccionado3').daterangepicker({
                     opens: 'left',
@@ -203,7 +258,7 @@ class Biblioteca {
                 $('#tiempoSeleccionado3').on('apply.daterangepicker', function(ev, picker) {
                     startDate = picker.startDate.format('YYYY-MM-DD');
                     endDate = picker.endDate.format('YYYY-MM-DD');
-                   filtrarNoticias();
+                    filtrarNoticias();
                     $('#tiempoSeleccionado3').data('daterangepicker').hide();
                 });
 
@@ -228,18 +283,29 @@ class Biblioteca {
             if (limpiarFiltroOptionFecha) {
                 limpiarFiltroOptionFecha.remove();
             }
+            prioridadSelectMobile.selectedIndex = prioridadSelectMobile.querySelector('option[value=""]').index;
+            const limpiarFiltroOptionMobile = prioridadSelectMobile.querySelector('option[value="Limpiar filtro"]');
+            if (limpiarFiltroOptionMobile) {
+                limpiarFiltroOptionMobile.remove();
+            }
+            fechaSelectMobile.selectedIndex = fechaSelectMobile.querySelector('option[value=""]').index;
+            const limpiarFiltroOptionFechaMobile = fechaSelectMobile.querySelector('option[value="Limpiar filtro"]');
+            if (limpiarFiltroOptionFechaMobile) {
+                limpiarFiltroOptionFechaMobile.remove();
+            }
             ajustarAnchoSelect(fechaSelect);
-        function ajustarAnchoSelect(select) {
-            var text = $(select).find('option:selected').text();
-            var $aux = $('<select/>').append($('<option/>').text(text));
-            $(select).after($aux);
-            $(select).width($aux.width());
-            $(select).css('margin-right', $aux.css('margin-right'));
-            $aux.remove();
-        }
+            ajustarAnchoSelect(fechaSelectMobile);
+            function ajustarAnchoSelect(select) {
+                var text = $(select).find('option:selected').text();
+                var $aux = $('<select/>').append($('<option/>').text(text));
+                $(select).after($aux);
+                $(select).width($aux.width());
+                $(select).css('margin-right', $aux.css('margin-right'));
+                $aux.remove();
+            }
             buscador.value = '';
             limpiar.style.display= 'none';
-           this.renderizarNoticias();
+            this.renderizarNoticias();
         });
 
         marcarBtn.addEventListener('click', (event) => {
@@ -278,14 +344,54 @@ class Biblioteca {
             checkContainers.forEach((checkContainer) => {
                 checkContainer.style.display = 'block';
             });
-            generarBtn2.style.display = 'inline';
-            generarBtn3.style.display = 'inline';
+            click = true;
+            adjustStyles();
+        });
+        function adjustStyles() {
+            if (click) {
+                if (window.innerWidth <= 1669) {
+                    document.querySelector("#generarBtn4").style.display = "inline";
+                    document.querySelector("#generarBtn5").style.display = "inline";
+                    document.querySelector("#generarBtn2").style.display = "none";
+                    document.querySelector("#generarBtn3").style.display = "none";
+                } else {
+                    document.querySelector("#generarBtn2").style.display = "inline";
+                    document.querySelector("#generarBtn3").style.display = "inline";
+                    document.querySelector("#generarBtn4").style.display = "none";
+                    document.querySelector("#generarBtn5").style.display = "none";
+                }
+            }
+        }
+
+        window.addEventListener("resize", adjustStyles);
+
+        generarBtnMobile.addEventListener('click', (event) => {
+            event.preventDefault();
+            exportando = true;
+            generarBtn.style.display = "none";
+            this.dom.querySelector("#marcarTodo").style.display = "block";
+            const checkboxes = document.querySelectorAll('.check-container input[type="checkbox"]');
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = false;
+            });
+            const checkContainers = document.querySelectorAll('.check-container');
+            checkContainers.forEach((checkContainer) => {
+                checkContainer.style.display = 'block';
+            });
+
+            adjustStyles();
         });
         cancelarBtn.addEventListener('click', (event) => {
             event.preventDefault();
             exportando = false;
             this.cancelarExportar();
         });
+        cancelarBtnMobile.addEventListener('click', (event) => {
+            event.preventDefault();
+            exportando = false;
+            this.cancelarExportar();
+        });
+
         this.dom.querySelector("#generarBtn2").addEventListener('click', () => {
             event.preventDefault();
             if (checkboxesMarcados.length === 0) {
@@ -295,6 +401,17 @@ class Biblioteca {
                 this.modalExportar.show();
             }
         });
+
+        this.dom.querySelector("#generarBtn4").addEventListener('click', () => {
+            event.preventDefault();
+            if (checkboxesMarcados.length === 0) {
+                this.dom.querySelector("#mensaje").textContent = "Por favor, selecciona al menos una noticia.";
+                this.modalErrorMensaje.show();
+            } else {
+                this.modalExportar.show();
+            }
+        });
+
         this.dom.querySelector("#exportarPDF").addEventListener('click', () => {
             this.exportarAPDF(checkboxesMarcados);
             checkboxesMarcados = [];
@@ -424,24 +541,23 @@ class Biblioteca {
                 </select>
                 <select id="tiempoSeleccionadoMobile2" style="border: none; width: 90px; margin-left: 20px; display: none">
                     <option value="" selected disabled>Fecha</option>
-                    <option value="ultimaHora">Última Hora</option>
                     <option value="ultimoDia">Último Día</option>
                     <option value="ultimaSemana">Última Semana</option>
                     <option value="ultimoMes">Último Mes</option>
-                    <option value="ultimoAno">Último Año</option>
                 </select>
                 <div id="pillsMobile-container" class="pill-container"></div>
                 <div class="spinner-border" role="status" style="color: #cdab68;margin-left: 50%;margin-top: 30%;display: none;">
                   <span class="visually-hidden">Loading...</span>
                 </div>
-               
+               <button class="btn btn-custom-outline-success3 btn-mobile" id="generarBtn4" style="display: none ; width: 110px; margin-left: 50px; margin-bottom: 10px; margin-top: 5px">ACEPTAR</button>
+                <button class="btn btn-custom-outline-success4 btn-mobile" id="generarBtn5" style=" display: none ; width: 110px; margin-bottom: 10px; margin-top: 5px">CANCELAR</button>
                 <div class="search-results-container1">
                     <div id="noticiasBiblioteca"></div> 
                     <div class="d-flex justify-content-center">
                     </div>
                 </div>
-                <button class="btn btn-custom-outline-success3" id="generarBtn2" style="display: none; margin-left: 1350px; margin-top: -120px">ACEPTAR</button>
-                <button class="btn btn-custom-outline-success4" id="generarBtn3" style=" display: none; margin-top: -120px">CANCELAR</button>
+                <button class="btn btn-custom-outline-success3 btn-desktop" id="generarBtn2" style="display: none ; margin-left: 1350px; margin-top: -120px">ACEPTAR</button>
+                <button class="btn btn-custom-outline-success4 btn-desktop" id="generarBtn3" style=" display: none ; margin-top: -120px">CANCELAR</button>
                 </div>
             </form>
             
@@ -558,6 +674,8 @@ class Biblioteca {
     cancelarExportar = () => {
         const aceptarBtn = this.dom.querySelector("#generarBtn2");
         const cancelarBtn = this.dom.querySelector("#generarBtn3");
+        const g4 = this.dom.querySelector("#generarBtn4");
+        const g5 = this.dom.querySelector("#generarBtn5");
         const generarBtn = this.dom.querySelector("#generarBtn1");
         const marcarBtn = this.dom.querySelector("#marcarTodo");
         const desmarcarBtn = this.dom.querySelector("#desmarcarTodo");
@@ -579,6 +697,9 @@ class Biblioteca {
         desmarcarBtn.style.display = "none";
         aceptarBtn.style.display = 'none';
         cancelarBtn.style.display = 'none';
+        g4.style.display = 'none';
+        g5.style.display = 'none';
+        click = false;
     }
     renderModal = () => {
         return `
@@ -1062,10 +1183,10 @@ class Biblioteca {
         }
 
         if(exportando){
-        const checkContainers = document.querySelectorAll('.check-container');
-        checkContainers.forEach((checkContainer) => {
-            checkContainer.style.display = 'block';
-        });
+            const checkContainers = document.querySelectorAll('.check-container');
+            checkContainers.forEach((checkContainer) => {
+                checkContainer.style.display = 'block';
+            });
         }
     }
     cargarBiblioteca = async () => {

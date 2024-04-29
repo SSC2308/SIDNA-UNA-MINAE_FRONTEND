@@ -355,9 +355,6 @@ header ul li a {
     border-color: #9c8a77;
     outline: none;
 }
-.button__text {
-    margin-right: auto;
-}
 
 .button__icon {
     font-size: 24px;
@@ -373,6 +370,10 @@ header ul li a {
 
 .button__text2 {
     margin-left: auto;
+}
+
+.button__text {
+    margin-right: auto;
 }
 #login {
     position: fixed;

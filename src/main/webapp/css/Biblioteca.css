@@ -151,14 +151,14 @@ input.BajaModal2:checked {
 }
 
 .custom-select-sm {
-    padding: 0.25rem 0.5rem; /* Ajusta el relleno para hacerlo mÃ¡s pequeÃ±o */
-    font-size: 0.875rem; /* Reduce el tamaÃ±o de la fuente */
+    padding: 0.25rem 0.5rem; /* Ajusta el relleno para hacerlo mÃƒÂ¡s pequeÃƒÂ±o */
+    font-size: 0.875rem; /* Reduce el tamaÃƒÂ±o de la fuente */
     padding-left: 20px;
 }
 
 .form-select option:checked {
-    background-color: #007bff; /* Cambia el color de fondo segÃºn tus preferencias */
-    color: #fff; /* Cambia el color del texto segÃºn tus preferencias */
+    background-color: #007bff; /* Cambia el color de fondo segÃƒÂºn tus preferencias */
+    color: #fff; /* Cambia el color del texto segÃƒÂºn tus preferencias */
 }
 
 .custom-modal-width {
@@ -167,14 +167,14 @@ input.BajaModal2:checked {
 }
 
 .input-wrapper {
-    max-width: 80%; /* Ajusta el valor segÃºn el ancho deseado */
+    max-width: 80%; /* Ajusta el valor segÃƒÂºn el ancho deseado */
     margin: 0 auto; /* Para centrar horizontalmente el campo de entrada dentro del div */
     display: inline-block;
 }
 
 .small-input {
-    font-size: 14px; /* TamaÃ±o de fuente mÃ¡s pequeÃ±o */
-    padding: 5px 10px; /* Espaciado mÃ¡s pequeÃ±o */
+    font-size: 14px; /* TamaÃƒÂ±o de fuente mÃƒÂ¡s pequeÃƒÂ±o */
+    padding: 5px 10px; /* Espaciado mÃƒÂ¡s pequeÃƒÂ±o */
 }
 
 .imagenes {
@@ -187,7 +187,7 @@ select {; /* Ancho personalizado */
     padding: 10px; /* Espaciado interior */
     border: 1px solid #000000; /* Borde personalizado */
     border-radius: 4px; /* Esquinas redondeadas */
-    font-size: 30px; /* TamaÃ±o de fuente personalizado */
+    font-size: 30px; /* TamaÃƒÂ±o de fuente personalizado */
     background-color: white; /* Fondo blanco */
     display: block;
 }
@@ -268,7 +268,7 @@ select {; /* Ancho personalizado */
 }
 
 .required-field-error {
-    border-bottom: 2px solid red; /* Agrega una lÃ­nea roja debajo del campo vacÃ­o */
+    border-bottom: 2px solid red; /* Agrega una lÃƒÂ­nea roja debajo del campo vacÃƒÂ­o */
 }
 
 .text-section-Biblioteca {
@@ -318,6 +318,8 @@ select {; /* Ancho personalizado */
     font-weight: bold;
     width: 115px;
 }
+
+
 @media (max-width: 1416px) {
 
     .check-container {
@@ -339,7 +341,7 @@ select {; /* Ancho personalizado */
     .search-results-container1 {
         max-height: 560px !important;
         max-width: 3000px;
-        margin-top: -25px;
+        margin-top: -5px;
     }
 }
 
@@ -359,10 +361,6 @@ select {; /* Ancho personalizado */
         margin-top: 5px !important;
     }
 
-    #generarBtn4{
-        margin-left:95px !important;
-        margin-top: 5px !important;
-    }
 }
 
 @media (max-width: 1480px) {

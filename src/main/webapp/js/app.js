@@ -144,15 +144,15 @@ class App {
 
         passwordTxt2.addEventListener('input', () => {
             const newPassword = passwordTxt2.value;
-            const isLengthValid = newPassword.length >= 12;
+            const isLengthValid = newPassword.length >= 8;
             const isUppercaseValid = /[A-Z]/.test(newPassword);
             const isLowercaseValid = /[a-z]/.test(newPassword);
             const isDigitValid = /\d/.test(newPassword);
             const isSpecialCharValid = /[!@#$%^&*]/.test(newPassword);
 
-            lengthRequirement2.innerHTML = `12 caracteres ${isLengthValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
+            lengthRequirement2.innerHTML = `8 caracteres ${isLengthValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
             uppercaseRequirement2.innerHTML = `Letra mayúscula ${isUppercaseValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
-            lowercaseRequirement2.innerHTML = `letra minúscula ${isLowercaseValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
+            lowercaseRequirement2.innerHTML = `Letra minúscula ${isLowercaseValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
             digitRequirement2.innerHTML = `Dígito numérico ${isDigitValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
             specialCharRequirement2.innerHTML = `Carácter especial ${isSpecialCharValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
 
@@ -167,15 +167,15 @@ class App {
 
         passwordTxt3.addEventListener('input', () => {
             const newPassword = passwordTxt3.value;
-            const isLengthValid = newPassword.length >= 12;
+            const isLengthValid = newPassword.length >= 8;
             const isUppercaseValid = /[A-Z]/.test(newPassword);
             const isLowercaseValid = /[a-z]/.test(newPassword);
             const isDigitValid = /\d/.test(newPassword);
             const isSpecialCharValid = /[!@#$%^&*]/.test(newPassword);
 
-            lengthRequirement.innerHTML = `12 caracteres ${isLengthValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
+            lengthRequirement.innerHTML = `8 caracteres ${isLengthValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
             uppercaseRequirement.innerHTML = `Letra mayúscula ${isUppercaseValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
-            lowercaseRequirement.innerHTML = `letra minúscula ${isLowercaseValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
+            lowercaseRequirement.innerHTML = `Letra minúscula ${isLowercaseValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
             digitRequirement.innerHTML = `Dígito numérico ${isDigitValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
             specialCharRequirement.innerHTML = `Carácter especial ${isSpecialCharValid ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}`;
 
@@ -407,6 +407,7 @@ class App {
         }
     }
 
+
     renderMenu = () => {
         return `
         <header id="menu">
@@ -554,7 +555,7 @@ class App {
                         <div id="passwordRequirements2">
                         <p>Requisitos de contraseña:</p>
                         <ul>
-                            <li id="lengthRequirement2">12 caracteres <i class="fas fa-times" style="color: red;"></i></li>
+                            <li id="lengthRequirement2">8 caracteres <i class="fas fa-times" style="color: red;"></i></li>
                             <li id="uppercaseRequirement2">Al menos una letra mayúscula <i class="fas fa-times" style="color: red;"></i></li>
                             <li id="lowercaseRequirement2">Al menos una letra minúscula <i class="fas fa-times" style="color: red;"></i></li>
                             <li id="digitRequirement2">Al menos 1 dígito numérico <i class="fas fa-times" style="color: red;"></i></li>
@@ -604,7 +605,7 @@ class App {
                     <div id="passwordRequirements">
                         <p>Requisitos de contraseña:</p>
                         <ul>
-                            <li id="lengthRequirement">12 caracteres <i class="fas fa-times" style="color: red;"></i></li>
+                            <li id="lengthRequirement">8 caracteres <i class="fas fa-times" style="color: red;"></i></li>
                             <li id="uppercaseRequirement">Al menos una letra mayúscula <i class="fas fa-times" style="color: red;"></i></li>
                             <li id="lowercaseRequirement">Al menos una letra minúscula <i class="fas fa-times" style="color: red;"></i></li>
                             <li id="digitRequirement">Al menos 1 dígito numérico <i class="fas fa-times" style="color: red;"></i></li>
@@ -777,6 +778,7 @@ class App {
         this.dom.querySelector("#app>#menu #menuItems #Admin")?.addEventListener('click', e => this.adminShow());
     }
 
+
     adminShow = () => {
         this.Admin = new Admin();
         const menuItems = this.dom.querySelectorAll("#app>#menu #menuItems a");
@@ -838,5 +840,4 @@ class App {
         this.dom.querySelector('#app>#body').replaceChildren(this.Etiqueta.dom);
 
     }
-
 }

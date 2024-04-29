@@ -598,7 +598,6 @@ class Etiqueta {
         event.preventDefault();
     }
 
-
     search = async () => {
         const searchInput = this.dom.querySelector("#buscadorEtiqueta");
         const modal = this.dom.querySelector("#modalError");

@@ -492,7 +492,6 @@ input.BajaModal:checked {
         width: 190px !important;
     }
 
-
     #pillsMobile-container {
         display: block;
         display: flex;
@@ -614,9 +613,9 @@ input.BajaModal:checked {
     }
 }
 
-@media (max-width: 773px) {
+@media (max-width: 733px) {
     #dropdwonUsuario{
-         margin-left: 140px; 
+        margin-left: 140px;
     }
 }
 
