@@ -483,33 +483,41 @@ class Busqueda {
         const searchData = await response.json();
         const newsResults = searchData.news_results;
         if (pagina === 1) {
-            const externalJsonUrl = 'https://ssc2308.github.io/newsJSON/news.json';
-            const externalResponse = await fetch(externalJsonUrl);
-            const externalData = await externalResponse.json();
-            externalData.news_results.forEach(noticia => {
-                const fechaCreacion = new Date(noticia.date);
-                const fechaActual = new Date();
-                const diferenciaMilisegundos = fechaActual - fechaCreacion;
-                const diferenciaMinutos = Math.floor(diferenciaMilisegundos / (1000 * 60));
-                const diferenciaHoras = Math.floor(diferenciaMinutos / 60);
-                const diferenciaDias = Math.floor(diferenciaHoras / 24);
-                if (diferenciaDias > 0) {
-                    noticia.date = `hace ${diferenciaDias} día${diferenciaDias !== 1 ? 's' : ''}`;
-                } else if (diferenciaHoras > 0) {
-                    noticia.date = `hace ${diferenciaHoras} hora${diferenciaHoras !== 1 ? 's' : ''}`;
-                } else {
-                    noticia.date = `hace ${diferenciaMinutos} minuto${diferenciaMinutos !== 1 ? 's' : ''}`;
+            try {
+                const externalJsonUrl = 'https://ssc2308.github.io/newsJSON/news.json';
+                const externalResponse = await fetch(externalJsonUrl);
+
+                if (!externalResponse.ok) {
+                    throw new Error('Error al cargar el JSON externo');
                 }
-            });
-            if (externalData.news_results && externalData.news_results.length > 0) {
-                for (const result of externalData.news_results) {
-                    const existe = newsResults.some(existingResult => existingResult.link === result.link);
-                    if (!existe) {
-                        newsResults.push(result);
+                const externalData = await externalResponse.json();
+                externalData.news_results.forEach(noticia => {
+                    const fechaCreacion = new Date(noticia.date);
+                    const fechaActual = new Date();
+                    const diferenciaMilisegundos = fechaActual - fechaCreacion;
+                    const diferenciaMinutos = Math.floor(diferenciaMilisegundos / (1000 * 60));
+                    const diferenciaHoras = Math.floor(diferenciaMinutos / 60);
+                    const diferenciaDias = Math.floor(diferenciaHoras / 24);
+                    if (diferenciaDias > 0) {
+                        noticia.date = `hace ${diferenciaDias} día${diferenciaDias !== 1 ? 's' : ''}`;
+                    } else if (diferenciaHoras > 0) {
+                        noticia.date = `hace ${diferenciaHoras} hora${diferenciaHoras !== 1 ? 's' : ''}`;
+                    } else {
+                        noticia.date = `hace ${diferenciaMinutos} minuto${diferenciaMinutos !== 1 ? 's' : ''}`;
+                    }
+                });
+
+                if (externalData.news_results && externalData.news_results.length > 0) {
+                    for (const result of externalData.news_results) {
+                        const existe = newsResults.some(existingResult => existingResult.link === result.link);
+                        if (!existe) {
+                            newsResults.push(result);
+                        }
                     }
                 }
+            } catch (error) {
+                console.error('Error al cargar el JSON externo o procesar los datos:', error);
             }
-
         }
 
         if (newsResults.length === 0) {
@@ -517,20 +525,20 @@ class Busqueda {
         } else {
             const news = this.ordenarNoticiasPorTiempo(newsResults);
             const imageUrls = [];
+            const fuentesNoDeseadasUrl = 'https://ssc2308.github.io/newsJSON/noDeseadas.json';
+            let fuentesNoDeseadas = [];
+            try {
+                const responseFuentes = await fetch(fuentesNoDeseadasUrl);
+                const fuentesData = await responseFuentes.json();
+                fuentesNoDeseadas = fuentesData.fuentes_no_deseadas;
+            } catch (error) {
+                console.error('Error al cargar el JSON de fuentes no deseadas:', error);
+            }
             for (const [index, result] of news.slice(0, 25).entries()) {
                 if (signal.aborted) {
                     break;
                 }
-                if (result.source.includes('News ES Euro') ||
-                    result.link.includes('www.nacion.com/viva/musica') ||
-                    result.link.includes('www.cuerpomente.com/') ||
-                    result.link.includes('https://portalinnova.cl') ||
-                    result.link.includes('https://newsinamerica.com') ||
-                    result.link.includes('https://www.diariocolatino.com/') ||
-                    result.link.includes('https://awsbitlynews.com/') ||
-                    result.link.includes('https://www.areacucuta.com/') ||
-                    result.link.includes('www.crhoy.com/entretenimiento/') ||
-                    result.link.includes('https://dialogo-americas.com/es/')){
+                if (fuentesNoDeseadas.some(unwantedSource => result.link.includes(unwantedSource))) {
                     continue;
                 }
                 let imageUrl = '';
@@ -586,15 +594,13 @@ class Busqueda {
                 noticiasCoincidentes.appendChild(elementoNoticiaCoincidente);
             }
             if (pagina === 1 && !signal.aborted) {
-                const noticias = news.filter(result => !result.source.includes('News ES Euro') &&
-                    !result.link.includes('www.nacion.com/viva/musica') &&
-                    !result.link.includes('www.cuerpomente.com/') &&
-                    !result.link.includes('https://portalinnova.cl') &&
-                    !result.link.includes('https://www.areacucuta.com/') &&
-                    !result.link.includes('https://www.diariocolatino.com/') &&
-                    !result.link.includes('https://awsbitlynews.com/') &&
-                    !result.link.includes('https://newsinamerica.com') &&
-                    !result.link.includes('www.crhoy.com/entretenimiento/'));
+                let noticias = news;
+                try {
+
+                    noticias = noticias.filter(result => !fuentesNoDeseadas.some(unwantedSource => result.link.includes(unwantedSource)));
+                } catch (error) {
+                    console.error('Error al cargar el JSON de fuentes no deseadas:', error);
+                }
                 localStorage.setItem('noticias', JSON.stringify(noticias.slice(0, 24)));
                 localStorage.setItem('ultimaHora', Date.now());
             }

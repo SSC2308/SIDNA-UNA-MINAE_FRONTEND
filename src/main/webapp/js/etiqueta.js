@@ -259,17 +259,25 @@ class Etiqueta {
                 if (modalFooter) {
                     modalFooter.style.display = 'none';
                 }
+                if (descripcion === "Costa Rica" || descripcion === "Medio Ambiente" || descripcion=== "Noticia Externa") {
+                    mensaje.textContent = `No se puede editar la etiqueta: ${descripcion}`;
+                    this.showModalError();
+                    setTimeout(() => {
+                        this.hideModalError2();
+                    }, 2000);
+                    return;
+                }
                 if (noticiasAsociadas === 1) {
-                    mensaje.textContent = `No se puede editar la etiqueta porque tiene 1 noticias asociada`;
+                    mensaje.textContent = `No se puede editar la etiqueta porque tiene 1 noticia asociada`;
                 } else {
                     mensaje.textContent = `No se puede editar la etiqueta porque tiene ${noticiasAsociadas} noticias asociadas`;
                 }
+
                 if (noticiasAsociadas > 0) {
                     this.showModalError();
                 } else {
                     this.editarEtiqueta(etiquetaId, descripcion, usuarioID);
                 }
-
             });
         });
         toggleSwitches.forEach((toggleSwitch) => {

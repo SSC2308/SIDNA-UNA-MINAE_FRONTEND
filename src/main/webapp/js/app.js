@@ -99,6 +99,8 @@ class App {
             cambiarContrasena.style.display = 'none';
             this.dom.querySelector('#loginTxt').value = '';
             this.dom.querySelector('#passwordTxt').value = '';
+            this.dom.querySelector('#passwordTxt2').value = '';
+            this.dom.querySelector('#confpasswordTxt').value = '';
         });
 
         cambiarPassword.addEventListener('click', (event) => {
@@ -231,10 +233,10 @@ class App {
                     confpasswordTxt.addEventListener('input', () => {
                         if (!passwordTxt2.value && !confpasswordTxt.value) {
                             errorConfPassword.style.display = 'none';
-                            cambiarButton.style.display = 'block';
+                            cambiarButton.style.display = 'flex';
                         } else {
                             if (passwordTxt2.value === confpasswordTxt.value) {
-                                cambiarButton.style.display = 'block';
+                                cambiarButton.style.display = 'flex';
                                 errorConfPassword.style.display = 'none';
                             } else {
                                 cambiarButton.style.display = 'none';
