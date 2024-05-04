@@ -5,7 +5,7 @@ class Admin {
 
     state;
 
-    //prueba2
+    //prueba3
 
     constructor() {
         this.state = {'entities': new Array(), 'entity': this.emptyEntity(), 'mode': 'A', usuarios: []};
