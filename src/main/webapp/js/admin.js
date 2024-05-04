@@ -62,7 +62,7 @@ class Admin {
                <i class="fa-solid fa-plus"></i> <span class="texto-agregar">Agregar Usuario</span>
                 </button>
                 <button class="btn btn-custom-outline-success2 agregarUsuarioBtn" id="agregarUsuarioBtn2" style="width: 190px; background-color: #4CAF50 ; color: #ffffff; border-color: #4CAF50; margin-bottom: 50px;">
-               <i class="fa-solid fa-plus"></i> <span class="texto-agregar">Nuevo Boton</span>
+               <i class="fa-solid fa-plus"></i> <span class="texto-agregar">NuevoBoton</span>
                 </button>
             <table id="usuariosTable" class="table">
                 <thead>
