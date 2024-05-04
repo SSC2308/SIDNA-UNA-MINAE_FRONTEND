@@ -1,4 +1,4 @@
-
+const version = "1.0.1";
 class Admin {
     dom;
 
@@ -6,7 +6,7 @@ class Admin {
 
     state;
 
-    //prueba1
+    //prueba2
     constructor() {
         this.state = {'entities': new Array(), 'entity': this.emptyEntity(), 'mode': 'A', usuarios: []};
         this.dom = this.render();
