@@ -58,7 +58,7 @@ class Admin {
         <div class="linea-verde"></div>
         <div class="container" style="margin-top: 40px;">
         <button class="btn btn-custom-outline-success2 agregarUsuarioBtn" id="agregarUsuarioBtn" style="width: 190px; background-color: #4CAF50 ; color: #ffffff; border-color: #4CAF50; margin-bottom: 50px;">
-               <i class="fa-solid fa-plus"></i> <span class="texto-agregar">Agregar Usuario</span>
+               <i class="fa-solid fa-plus"></i> <span class="texto-agregar">AgregarUsuario</span>
                 </button>
             <table id="usuariosTable" class="table">
                 <thead>
