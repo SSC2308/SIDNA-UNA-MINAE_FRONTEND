@@ -4,7 +4,7 @@ class Admin {
     modal;
 
     state;
-//prueba 
+
 
     constructor() {
         this.state = {'entities': new Array(), 'entity': this.emptyEntity(), 'mode': 'A', usuarios: []};
@@ -25,8 +25,12 @@ class Admin {
 
 
         const agregarBtn = this.dom.querySelector("#agregarUsuarioBtn");
+        const actualizarBtn = this.dom.querySelector("#actualizarBtn");
         agregarBtn.addEventListener('click', () => {
             this.modalAgregarUsuario.show();
+        });
+        actualizarBtn.addEventListener('click', () => {
+            this.actualizar();
         });
         setTimeout(() => {
             this.cargarUsuarios();
@@ -58,7 +62,10 @@ class Admin {
         <div class="linea-verde"></div>
         <div class="container" style="margin-top: 40px;">
         <button class="btn btn-custom-outline-success2 agregarUsuarioBtn" id="agregarUsuarioBtn" style="width: 190px; background-color: #4CAF50 ; color: #ffffff; border-color: #4CAF50; margin-bottom: 50px;">
-               <i class="fa-solid fa-plus"></i> <span class="texto-agregar">AgregarUsuario</span>
+               <i class="fa-solid fa-plus"></i> <span class="texto-agregar">Agregar Usuario</span>
+                </button>
+                <button class="btn btn-custom-outline-success4" id="actualizarBtn" style="width: 250px; margin-bottom: 50px; margin-left: 10px">
+               <i class="fa-solid fa-download"></i> <span class="texto-agregar">Buscar Actualizaciones</span>
                 </button>
             <table id="usuariosTable" class="table">
                 <thead>
@@ -670,10 +677,6 @@ class Admin {
         return true;
     }
 
-
-
-
-
     editUser = async () =>{
         event.preventDefault();
         await this.loadEdit();
@@ -759,7 +762,24 @@ class Admin {
 
 
     }
-
+    actualizar = async () => {
+        fetch(`${backend}/git/pull`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al realizar el pull');
+                }
+                return response.text();
+            })
+            .then(message => {
+                message = message.replace(/\.$/gm, '<br>');
+                document.getElementById("mensajes").innerHTML = message;
+                document.getElementById('mensajes').style.fontSize = '15px';
+                this.modalExitoGenerico.show();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
 
     restablecerPassword = async () => {
         event.preventDefault();
@@ -785,8 +805,6 @@ class Admin {
             console.error("Error al cambiar la contrasena:", error);
         }
     }
-
-
 
     emptyEntity = () => {
         var entity = '';

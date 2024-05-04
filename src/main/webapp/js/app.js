@@ -40,7 +40,6 @@ class App {
 
     initEventListeners() {
         this.dom.querySelector("#app #modalErrorMensaje #dismissButton").addEventListener('click', this.hideModalMensaje);
-
         const loginButton = this.dom.querySelector('#loginButton');
         const cambiarPassword = this.dom.querySelector('.social-login__icon');
         const siguientePassword = this.dom.querySelector('#siguienteButton2');
