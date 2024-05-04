@@ -6,7 +6,6 @@ class Admin {
 
     state;
 
-
     constructor() {
         this.state = {'entities': new Array(), 'entity': this.emptyEntity(), 'mode': 'A', usuarios: []};
         this.dom = this.render();
@@ -22,8 +21,6 @@ class Admin {
         this.dom.querySelector("#admin #modalAgregarUsuario #guardarUsuarioBtn").addEventListener('click', this.addUser.bind(this));
         this.dom.querySelector("#admin #modalConfirmacionPass #confirmarBtn").addEventListener('click', this.restablecerPassword.bind(this));
         this.dom.querySelector("#admin #modalEditarUsuario #guardarCambiosBtn").addEventListener('click', this.editUser.bind(this));
-
-
 
         const agregarBtn = this.dom.querySelector("#agregarUsuarioBtn");
         const actualizarBtn = this.dom.querySelector("#actualizarBtn");
@@ -676,6 +673,7 @@ class Admin {
             return false;
         }
         return true;
+
     }
 
     editUser = async () =>{
