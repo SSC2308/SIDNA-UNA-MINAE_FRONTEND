@@ -65,7 +65,7 @@ class Admin {
                <i class="fa-solid fa-plus"></i> <span class="texto-agregar">Agregar Usuario</span>
                 </button>
                 <button class="btn btn-custom-outline-success4" id="actualizarBtn" style="width: 250px; margin-bottom: 50px; margin-left: 10px">
-               <i class="fa-solid fa-download"></i> <span class="texto-agregar">Buscar Actualizaciones</span>
+               <i class="fa-solid fa-download"></i> <span class="texto-agregar">Actualizar Sistema</span>
                 </button>
             <table id="usuariosTable" class="table">
                 <thead>
