@@ -1,4 +1,4 @@
-const version = "1.0.1";
+const version = "1.0.0";
 class Admin {
     dom;
 
@@ -6,7 +6,7 @@ class Admin {
 
     state;
 
-    //prueba2
+
     constructor() {
         this.state = {'entities': new Array(), 'entity': this.emptyEntity(), 'mode': 'A', usuarios: []};
         this.dom = this.render();
@@ -772,10 +772,17 @@ class Admin {
                 return response.text();
             })
             .then(message => {
-                message = message.replace(/\.$/gm, '<br>');
-                document.getElementById("mensajes").innerHTML = message;
-                document.getElementById('mensajes').style.fontSize = '15px';
-                this.modalExitoGenerico.show();
+                let primerLinea = message.split('\n')[1];
+                let versionMensaje = primerLinea.split(' ')[1].trim();
+                if (versionMensaje === version) {
+                    this.showModalExitoGenerico("Ya tienes la última versión");
+                } else {
+                    let mensajeSinVersion = message.replace(primerLinea + '\n', '');
+                    mensajeSinVersion = mensajeSinVersion.replace(/\.$/gm, '<br>');
+                    document.getElementById("mensajes").innerHTML = mensajeSinVersion;
+                    document.getElementById('mensajes').style.fontSize = '15px';
+                    this.modalExitoGenerico.show();
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
