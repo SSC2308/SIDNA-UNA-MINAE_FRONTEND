@@ -24,7 +24,6 @@ class Admin {
 
 
 
-
         const agregarBtn = this.dom.querySelector("#agregarUsuarioBtn");
         agregarBtn.addEventListener('click', () => {
             this.modalAgregarUsuario.show();
