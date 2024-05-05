@@ -1659,8 +1659,7 @@ class Biblioteca {
                 fecha: noticia.fecha,
                 fuente: noticia.fuente,
                 prioridad: noticia.prioridad,
-                enlace: 'Ver enlace'
-                //{text: 'Ver enlace', hyperlink: noticia.enlace}
+                enlace: noticia.enlace
             });
             const prioridadCell = row.getCell('prioridad');
             if (prioridadCell.value && prioridadStyles[prioridadCell.value]) {
