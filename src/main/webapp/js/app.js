@@ -1,9 +1,8 @@
 //const backend = "https://needed-eagle-curious.ngrok-free.app/MINAE/minae";
-//const backend = "http://localhost:9091/backend";
-const backend = "https://sidnaminae-backend.onrender.com/backend";
+const backend = "http://localhost:9091/backend";
+//const backend = "https://sidnaminae-backend.onrender.com/backend";
 //const backend = "https://sidnaminae.azurewebsites.net/backend";
 //const backend = "http://localhost:8080/MINAE/minae";
-
 class App {
     dom;
     modal;
@@ -317,6 +316,10 @@ class App {
                     }
                 } catch (error) {
                     console.error('Error al autenticar usuario:', error);
+                    localStorage.removeItem('usuario');
+                    localStorage.removeItem('usuarioNomb');
+                    const login = this.dom.querySelector('#login');
+                    login.style.display = 'flex';
                 }
             } else {
                 const login = this.dom.querySelector('#login');

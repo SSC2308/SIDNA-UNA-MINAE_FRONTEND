@@ -1,4 +1,4 @@
-const version = "1.0.1";
+const version = "1.0.0";
 class Admin {
     dom;
 
@@ -28,6 +28,7 @@ class Admin {
             this.modalAgregarUsuario.show();
         });
         actualizarBtn.addEventListener('click', () => {
+            document.getElementById("progress-bar-container").style.display = "block";
             this.actualizar();
         });
         setTimeout(() => {
@@ -59,6 +60,9 @@ class Admin {
         <div class="linea-amarilla"></div>
         <div class="linea-verde"></div>
         <div class="container" style="margin-top: 40px;">
+        <div id="progress-bar-container">
+          <div id="progress-bar"></div>
+        </div>
         <button class="btn btn-custom-outline-success2 agregarUsuarioBtn" id="agregarUsuarioBtn" style="width: 190px; background-color: #4CAF50 ; color: #ffffff; border-color: #4CAF50; margin-bottom: 50px;">
                <i class="fa-solid fa-plus"></i> <span class="texto-agregar">Agregar Usuario</span>
                 </button>
@@ -762,6 +766,7 @@ class Admin {
 
     }
     actualizar = async () => {
+        document.getElementById("progress-bar").style.width = "0%";
         fetch(`${backend}/git/pull`)
             .then(response => {
                 if (!response.ok) {
@@ -784,6 +789,12 @@ class Admin {
             })
             .catch(error => {
                 console.error('Error:', error);
+            })
+            .finally(() => {
+                document.getElementById("progress-bar").style.width = "100%";
+                setTimeout(() => {
+                    document.getElementById("progress-bar-container").style.display = "none";
+                }, 1000);
             });
     }
 
