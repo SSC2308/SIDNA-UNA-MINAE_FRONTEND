@@ -1,9 +1,8 @@
 //const backend = "https://needed-eagle-curious.ngrok-free.app/MINAE/minae";
-//const backend = "http://localhost:9090/backend";
+//const backend = "http://localhost:9091/backend";
 const backend = "https://sidnaminae-backend.onrender.com/backend";
 //const backend = "https://sidnaminae.azurewebsites.net/backend";
 //const backend = "http://localhost:8080/MINAE/minae";
-// prueba 2
 class App {
     dom;
     modal;
@@ -49,6 +48,7 @@ class App {
         const cancelarCambio2 = this.dom.querySelector('#cancelarButton2');
         const cancelarCambio3 = this.dom.querySelector('#cancelarButton3');
         const cambiarButton = this.dom.querySelector('#cambiarButton');
+        const loginTxt = this.dom.querySelector('#loginTxt');
         const passwordTxt3 = this.dom.querySelector('#passwordTxt3');
         const passwordTxt2 = this.dom.querySelector('#passwordTxt2');
         const confpasswordTxt2 = this.dom.querySelector('#confpasswordTxt2');
@@ -64,6 +64,7 @@ class App {
         const digitRequirement2 = this.dom.querySelector('#digitRequirement2');
         const specialCharRequirement2 = this.dom.querySelector('#specialCharRequirement2');
         let usuarioID;
+
 
         cambiarButton.addEventListener('click', (event) => {
             event.preventDefault();
@@ -127,6 +128,21 @@ class App {
             cambiarContrasena2.style.display = 'flex';
         });
 
+        loginTxt.addEventListener('input', () => {
+            const input = document.getElementById('loginTxt');
+            let cleanedValue = input.value.replace(/[^\dX]/g, '');
+            if (cleanedValue.length > 9) {
+                cleanedValue = cleanedValue.substr(0, 9);
+            }
+            let formattedValue = '';
+            for (let i = 0; i < cleanedValue.length; i++) {
+                if (i === 1 || i === 5) {
+                    formattedValue += '-';
+                }
+                formattedValue += cleanedValue[i];
+            }
+            input.value = formattedValue;
+        });
         confpasswordTxt2.addEventListener('input', () => {
             if (!passwordTxt3.value && !confpasswordTxt2.value) {
                 errorConfPassword2.style.display = 'none';
@@ -288,6 +304,7 @@ class App {
                         this.cerrarSesion();
                         const login = this.dom.querySelector('#login');
                         login.style.display = 'flex';
+
                     } else {
                         if (usuarioAutenticado.rol.descripcion === 'Administrador') {
                             this.renderMenuItemsAdmin();
@@ -305,6 +322,7 @@ class App {
                 login.style.display = 'flex';
             }
         })();
+
 
         this.dom.querySelector('#cerrarSesion').addEventListener('click', () => {
             this.cerrarSesion();
@@ -644,9 +662,8 @@ class App {
                     <span id="errorConfPassword3" class="error-message" style="display: none;">Las contraseñas no coinciden</span>
                         <div class="login__field">
                     <i class="login__icon fas fa-user"></i>
-                    <input id="loginTxt2" type="text" class="login__input" placeholder="ID / Email">
+                    <input id="loginTxt2" type="text" class="login__input" placeholder="Identificacion">
                       </div>
-                        
                         <button id="siguienteButton2" class="button login__submit">
                             <span class="button__text">Siguiente</span>
                             <i class="button__icon fas fa-chevron-right"></i> 
