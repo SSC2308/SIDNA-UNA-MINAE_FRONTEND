@@ -586,8 +586,12 @@ class Busqueda {
                 const tipo = "1";
                 spinner.style.display = 'none';
                 const elementoNoticiaCoincidente = this.crearElementoNoticiaCoincidente(result, imageUrl, colorBorde, colorBoton,tipo,result.thumbnail);
+                if (!imageUrl) {
+                    news[index].thumbnail = result.thumbnail;
+                } else {
+                    news[index].thumbnail = imageUrl;
+                }
                 news[index].backup = result.thumbnail;
-                news[index].thumbnail = imageUrl;
                 if (signal.aborted) {
                     break;
                 }
