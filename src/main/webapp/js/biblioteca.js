@@ -1226,7 +1226,6 @@ class Biblioteca {
             },
         }).then((response) => {
             if (!response.ok) {
-                console.error(`Error al actualizar la prioridad de la noticia: ${response.status}`);
                 throw new Error('Error al actualizar prioridad');
             }
         }).catch((error) => {
@@ -1496,7 +1495,11 @@ class Biblioteca {
                 const urlImagen = `${backend}/proxy/img?url=` + noticia.imagen;
                 imagenBase64 = await this.convertirWebpAFormato(urlImagen, 'jpeg');
             } else {
-                imagenBase64 = await this.obtenerImagenBase64(noticia.imagen);
+                try {
+                    imagenBase64 = await this.obtenerImagenBase64(noticia.imagen);
+                } catch (error) {
+                    continue;
+                }
             }
             const imagenAncho = 160 / 72;
             const imagenAltura = 100 / 72;
