@@ -1854,7 +1854,7 @@ class Biblioteca {
                         ticks: {
                             stepSize: 1,
                             font: {
-                                size: 24,
+                                size: 16,
                                 weight: 'bold'
                             }
                         }
