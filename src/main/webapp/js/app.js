@@ -3,6 +3,7 @@ const backend = "http://localhost:9090/backend";
 //const backend = "https://sidnaminae-backend.onrender.com/backend";
 //const backend = "https://sidnaminae.azurewebsites.net/backend";
 //const backend = "http://localhost:8080/MINAE/minae";
+//prueba
 class App {
     dom;
     modal;
