@@ -1083,7 +1083,7 @@ class Biblioteca {
                 <img src="${imagen}" class="card-img-top card-img-custom" alt="" 
                 data-alternative="${imagen},images/default.png" 
                 onerror="loadAlternative(this, this.getAttribute('data-alternative').split(/,/)); this.classList.add('card-img-top', 'card-img-custom');">
-               
+              
                 <div class="card-body">
                     <div class="text-section-Biblioteca">
                         <h5 class="card-title fw-bold">${titulo}</h5>
@@ -1729,6 +1729,13 @@ class Biblioteca {
         canvasPie.style.left = '-9999px';
         Chart.defaults.font.size = 20;
         const ctxPie = canvasPie.getContext('2d');
+        const colorMap = {
+            'Alta': 'rgb(218,149,149)',
+            'Media': 'rgb(255,230,153)',
+            'Baja': 'rgb(194,214,153)'
+        };
+
+        const colors = Object.keys(prioridadesRepetidas).map(key => colorMap[key]);
         const myPieChart = new Chart(ctxPie, {
             type: 'pie',
             data: {
@@ -1736,14 +1743,8 @@ class Biblioteca {
                 datasets: [{
                     label: 'Frecuencia de Prioridades',
                     data: Object.values(prioridadesRepetidas),
-                    backgroundColor: [
-                        'rgb(218,149,149)',
-                        'rgb(255,230,153)',
-                        'rgb(194,214,153)',
-                    ],
-                    borderColor: [
-                        'rgb(255,255,255)',
-                    ],
+                    backgroundColor: colors,
+                    borderColor: 'rgb(255,255,255)',
                     borderWidth: 2
                 }]
             },
@@ -1759,14 +1760,15 @@ class Biblioteca {
                         },
                         color: '#000000',
                         font: {
-                            size: 36,
+                            size: 40,
+                            weight: 'bold'
                         }
                     },
                     legend: {
                         display: true,
                         labels: {
                             font: {
-                                size: 40,
+                                size: 60,
                                 weight: 'bold'
                             }
                         }
@@ -1832,6 +1834,9 @@ class Biblioteca {
             }]
         });
         const ctx = canvas.getContext('2d');
+        const fuenteCountsLength = Object.keys(fuenteCounts).length;
+        const fontSize = Math.max(12, Math.min(24, 400 / fuenteCountsLength));
+
         const myChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -1854,7 +1859,7 @@ class Biblioteca {
                         ticks: {
                             stepSize: 1,
                             font: {
-                                size: 16,
+                                size: fontSize,
                                 weight: 'bold'
                             }
                         }
@@ -1862,7 +1867,11 @@ class Biblioteca {
                     x: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 1
+                            stepSize: 1,
+                            font: {
+                                size: 24,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }

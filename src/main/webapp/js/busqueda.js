@@ -157,7 +157,6 @@ class Busqueda {
             <option value="ultimoDia">Último Día</option>
             <option value="ultimaSemana">Última Semana</option>
             <option value="ultimoMes">Último Mes</option>
-            <option value="ultimoAno">Último Año</option>
         </select>
     </div>
         </div>
@@ -730,8 +729,7 @@ class Busqueda {
             'ultimaHora': 'qdr:h',
             'ultimoDia': 'qdr:d',
             'ultimaSemana': 'qdr:w',
-            'ultimoMes': 'qdr:m',
-            'ultimoAno': 'qdr:y'
+            'ultimoMes': 'qdr:m'
         };
         return tiempoQueries[tiempoSeleccionado] || '';
     }

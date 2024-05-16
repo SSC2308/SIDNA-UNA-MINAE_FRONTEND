@@ -1,5 +1,6 @@
 const backend = "http://localhost:9090/backend";
 
+
 class App {
     dom;
     modal;
@@ -21,7 +22,6 @@ class App {
         const html = `
             ${this.renderMenu()}
             ${this.renderBody()} 
-            ${this.renderFooter()}
             ${this.renderModal()}
             ${this.renderModalCambiarContrasena()}
             ${this.renderModalCambiarContrasena2()}
