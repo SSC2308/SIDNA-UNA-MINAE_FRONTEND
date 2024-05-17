@@ -159,7 +159,7 @@ class Etiqueta {
     </div>
   </div>
 </div>
- <div class="table-responsive" style="overflow: auto; max-height: 600px; overflow-y: auto; overflow-x: hidden; background-color: white">
+ <div class="table-responsive" style="overflow: auto; max-height: 590px; overflow-y: auto; overflow-x: hidden; background-color: white">
  <div id="tableContainer" style="margin-top: -5px">
   <table class="table table-fixed" id="tablaEtiquetas" style="display: none">  
   <thead>

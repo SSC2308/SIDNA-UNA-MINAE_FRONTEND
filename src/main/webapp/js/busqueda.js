@@ -697,20 +697,49 @@ class Busqueda {
         this.abortController = new AbortController();
         const { signal } = this.abortController;
         const tiempoSeleccionado = this.obtenerTiempoSeleccionado();
-        const apiKey = await this.obtenerSiguienteApiKey();
+        const fuentesNoDeseadasUrl = 'https://ssc2308.github.io/newsJSON/noDeseadas.json';
+        let fuentesNoDeseadas = [];
         try {
-            const tiempoQuery = this.obtenerTiempoQuery(tiempoSeleccionado);
-            const apiUrl = this.construirApiUrl(busqueda, tiempoQuery, apiKey,1);
-            const searchData = await this.obtenerDatosApi(apiUrl);
-
-            if (!searchData.news_results) {
-                this.mostrarMensajeNoNoticias();
-            } else {
-                this.mostrarNoticiasCoincidentes(searchData.news_results);
-            }
+            const responseFuentes = await fetch(fuentesNoDeseadasUrl);
+            const fuentesData = await responseFuentes.json();
+            fuentesNoDeseadas = fuentesData.fuentes_no_deseadas;
         } catch (error) {
-            this.manejarErrorApi(error);
+            console.error('Error al cargar el JSON de fuentes no deseadas:', error);
         }
+        let intentos = apiKeys.length;
+        while (intentos > 0) {
+            const apiKey = await this.obtenerSiguienteApiKey();
+            const tiempoQuery = this.obtenerTiempoQuery(tiempoSeleccionado);
+            const apiUrl = this.construirApiUrl(busqueda, tiempoQuery, apiKey, 1);
+            try {
+                const searchData = await this.obtenerDatosApi(apiUrl);
+
+                if (!searchData.news_results) {
+                    this.mostrarMensajeNoNoticias();
+                } else {
+                    const filteredResults = searchData.news_results.filter(result =>
+                        !fuentesNoDeseadas.some(unwantedSource => result.link.includes(unwantedSource))
+                    );
+
+                    if (filteredResults.length === 0) {
+                        this.mostrarMensajeNoNoticias();
+                    } else {
+                        this.mostrarNoticiasCoincidentes(filteredResults);
+                    }
+                }
+                break;
+            } catch (error) {
+                if (error.message === 'Too Many Requests') {
+                    console.warn(`API key ${apiKey} excedió el límite de solicitudes. Intentando con la siguiente...`);
+                    intentos--;
+                } else {
+                    this.manejarErrorApi(error);
+                    break;
+                }
+            }
+        }
+
+        spinner.style.display = 'none';
     }
     limpiarNoticiasCoincidentes() {
         const noticiasCoincidentes = document.querySelector('#noticiasCoincidentes');
@@ -719,7 +748,7 @@ class Busqueda {
     obtenerTiempoSeleccionado() {
         return document.querySelector('#tiempoSeleccionado').value;
     }
-    async obtenerSiguienteApiKey(maxIntentos = 3) {
+    async obtenerSiguienteApiKey() {
         const apiKey = apiKeys[apiKeyActual];
         apiKeyActual = (apiKeyActual + 1) % apiKeys.length;
         return apiKey;
@@ -747,9 +776,12 @@ class Busqueda {
         const apiUrl = `https://serpapi.com/search?api_key=${apiKey}&q=${encodedKeyword}&location=Costa%20Rica&google_domain=google.co.cr&gl=cr&lr=lang_es&hl=es&tbm=nws&tbs=sbd:1${tiempoQuery ? `,${tiempoQuery}` : ''}&num=${resultsPerPage}&start=${inicio}`;
         return encodeURI(apiUrl);
     }
-    async  obtenerDatosApi(apiUrl) {
+    async obtenerDatosApi(apiUrl) {
         const corsProxyUrl = 'https://corsproxy.io/?';
         const response = await fetch(corsProxyUrl + apiUrl);
+        if (response.status === 429) {
+            throw new Error('Too Many Requests');
+        }
         return await response.json();
     }
 
