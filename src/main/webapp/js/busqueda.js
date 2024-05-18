@@ -661,20 +661,60 @@ class Busqueda {
         const noticiasJSON = localStorage.getItem('noticias');
         const noticiasCoincidentes = document.querySelector('#noticiasCoincidentes');
         noticiasCoincidentes.innerHTML = '';
-        const lastUpdatedTime = localStorage.getItem('ultimaHora');
-        if (lastUpdatedTime && (Date.now() - parseInt(lastUpdatedTime)) < 3600000) {
-            const noticias = JSON.parse(noticiasJSON);
-            if (noticias) {
+
+        let noticias = noticiasJSON ? JSON.parse(noticiasJSON) : [];
+            try {
+                const externalJsonUrl = 'https://ssc2308.github.io/newsJSON/news.json';
+                const externalResponse = await fetch(externalJsonUrl);
+
+                if (!externalResponse.ok) {
+                    throw new Error('Error al cargar el JSON externo');
+                }
+                const externalData = await externalResponse.json();
+                const ultimasNoticiasExternas = externalData.news_results.slice(-5);
+                ultimasNoticiasExternas.forEach(noticia => {
+                    const fechaCreacion = new Date(noticia.date);
+                    const fechaActual = new Date();
+                    const diferenciaMilisegundos = fechaActual - fechaCreacion;
+                    const diferenciaMinutos = Math.floor(diferenciaMilisegundos / (1000 * 60));
+                    const diferenciaHoras = Math.floor(diferenciaMinutos / 60);
+                    const diferenciaDias = Math.floor(diferenciaHoras / 24);
+                    if (diferenciaDias > 0) {
+                        noticia.date = `hace ${diferenciaDias} día${diferenciaDias !== 1 ? 's' : ''}`;
+                    } else if (diferenciaHoras > 0) {
+                        noticia.date = `hace ${diferenciaHoras} hora${diferenciaHoras !== 1 ? 's' : ''}`;
+                    } else {
+                        noticia.date = `hace ${diferenciaMinutos} minuto${diferenciaMinutos !== 1 ? 's' : ''}`;
+                    }
+                });
+
+                if (ultimasNoticiasExternas && ultimasNoticiasExternas.length > 0) {
+                    for (const result of ultimasNoticiasExternas) {
+                        const existe = noticias.some(existingResult => existingResult.link === result.link);
+                        if (!existe) {
+                            noticias.push(result);
+                        }
+                    }
+
+
+                    localStorage.setItem('noticias', JSON.stringify(noticias));
+
+                }
+
+                const news = this.ordenarNoticiasPorTiempo(noticias);
+
                 for (const [index, result] of noticias.entries()) {
                     let imageUrl = result.thumbnail;
                     const colorBorde = bordeColores[index % bordeColores.length];
                     const colorBoton = botonColores[index % botonColores.length];
                     const tipo = "1";
-                    const elementoNoticiaCoincidente = this.crearElementoNoticiaCoincidente(result, imageUrl, colorBorde, colorBoton,tipo);
+                    const elementoNoticiaCoincidente = this.crearElementoNoticiaCoincidente(result, imageUrl, colorBorde, colorBoton, tipo);
                     noticiasCoincidentes.appendChild(elementoNoticiaCoincidente);
                 }
+            } catch (error) {
+                console.error('Error al cargar el JSON externo o procesar los datos:', error);
             }
-        }
+
         var paginationNav = document.getElementById('paginationNav');
         paginationNav.style.display = 'block';
         globalAbortController.abort();
@@ -931,7 +971,6 @@ class Busqueda {
         const imagen = `${imageUrl}`;
         const fechaFormateada = this.convertirFechaEstandar(fecha);
         let descripciones;
-
 
         if (tipo === '1') {
             descripciones = ["Costa Rica", "Medio Ambiente"];
