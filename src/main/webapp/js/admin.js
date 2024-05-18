@@ -16,7 +16,6 @@ class Admin {
         this.modalBorrarUsuario = new bootstrap.Modal(this.dom.querySelector('#modalborrarusuario'));
         this.modalExitoGenerico = new bootstrap.Modal(this.dom.querySelector('#modalExitoGenerico'));
         this.modalErrorGenerico = new bootstrap.Modal(this.dom.querySelector('#modalErrorGenerico'));
-
         this.dom.querySelector("#admin #modalborrarusuario #confirmarb").addEventListener('click', this.deleteUser.bind(this));
         this.dom.querySelector("#admin #modalAgregarUsuario #guardarUsuarioBtn").addEventListener('click', this.addUser.bind(this));
         this.dom.querySelector("#admin #modalConfirmacionPass #confirmarBtn").addEventListener('click', this.restablecerPassword.bind(this));
