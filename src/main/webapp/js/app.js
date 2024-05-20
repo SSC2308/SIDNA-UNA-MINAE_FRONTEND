@@ -1,6 +1,5 @@
 const backend = "http://localhost:9090/backend";
 
-
 class App {
     dom;
     modal;
