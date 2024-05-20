@@ -695,15 +695,12 @@ class Busqueda {
                             noticias.push(result);
                         }
                     }
-
-
                     localStorage.setItem('noticias', JSON.stringify(noticias));
 
                 }
-
                 const news = this.ordenarNoticiasPorTiempo(noticias);
 
-                for (const [index, result] of noticias.entries()) {
+                for (const [index, result] of news.entries()) {
                     let imageUrl = result.thumbnail;
                     const colorBorde = bordeColores[index % bordeColores.length];
                     const colorBoton = botonColores[index % botonColores.length];
@@ -714,7 +711,6 @@ class Busqueda {
             } catch (error) {
                 console.error('Error al cargar el JSON externo o procesar los datos:', error);
             }
-
         var paginationNav = document.getElementById('paginationNav');
         paginationNav.style.display = 'block';
         globalAbortController.abort();
