@@ -1002,13 +1002,41 @@ class Busqueda {
         const spinner = imagenHoverContainer.querySelector('.spinner-border');
 
 
-        var requestOptions = {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                Authorization: 'Bearer gbgjLHFc6SNCIEz5tX5uMcPE3lQID4AaXetx6eoN'
+        var imgKeys = [
+            "1aVyOzQK6twlBRdCEkGraMWB0nUOGYhn",
+            "mjTW5uT9m5BiB1V47ByXTNd6kdDG5gBv",
+            "S4ENJ7Ww47HhLQP7OUShcytCTmxiZuHq",
+            "tUD9K4E9W9o6dfHvE3tp1CNyTtHwbSbC",
+            "xY1zGN11YLGzRgR5pjN5cfMbGFT2IXau"
+        ];
+        let currentKeyIndex = 0;
+        function getNextApiKey() {
+            const apiKey = imgKeys[currentKeyIndex];
+            currentKeyIndex = (currentKeyIndex + 1) % imgKeys.length;
+            return apiKey;
+        }
+
+        async function fetchScreenshot(url) {
+            for (let i = 0; i < imgKeys.length; i++) {
+                const apiKey = getNextApiKey();
+                const screenshotUrl = `https://corsproxy.io/?https://api.apilayer.com/screenshot?url=${encodeURIComponent(url)}`;
+                let requestOptions = {
+                    method: 'GET',
+                    redirect: 'follow',
+                    headers: new Headers({ 'apikey': apiKey })
+                };
+                try {
+                    const screenshotResponse = await fetch(screenshotUrl, requestOptions);
+                    if (!screenshotResponse.ok) {
+                        throw new Error('La solicitud no fue exitosa. Código de estado: ' + screenshotResponse.status);
+                    }
+                    return await screenshotResponse.json();
+                } catch (error) {
+                    console.error(`Error con la API key ${apiKey}:`, error);
+                }
             }
-        };
+            throw new Error('Todas las API keys fallaron.');
+        }
 
         let hoverTimer;
         enlaceBtn.addEventListener('mouseenter', async () => {
@@ -1019,17 +1047,13 @@ class Busqueda {
                 }
 
                 try {
-                    const screenshotResponse = await fetch("https://screendot.io/api/standard?url=" + result.link, requestOptions);
-                    if (!screenshotResponse.ok) {
-                        throw new Error('La solicitud no fue exitosa. Código de estado: ' + screenshotResponse.status);
-                    }
-                    const imagenBlob = await screenshotResponse.blob();
-                    const imagenUrl = URL.createObjectURL(imagenBlob);
+                    const screenshotData = await fetchScreenshot(result.link);
+                    const imagenUrl = screenshotData.screenshot_url;
                     imagenHover.src = imagenUrl;
                     imagenHover.style.display = 'block';
                     spinner.style.display = 'none';
                 } catch (error) {
-                    console.error(error);
+                    console.error('Error al obtener la captura de pantalla:', error);
                 }
             }, 1000);
         });

@@ -456,7 +456,13 @@ input.BajaModal:checked {
 
 @media (max-width: 1900px) {
     .search-container {
-        max-width: 520px !important;
+        max-width: 920px !important;
+    }
+}
+
+@media (max-width: 1600px) and (orientation: landscape) {
+    .search-results-container {
+        max-height: 450px !important;
     }
 }
 

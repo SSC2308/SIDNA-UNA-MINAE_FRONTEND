@@ -389,6 +389,13 @@ select {; /* Ancho personalizado */
     }
 }
 
+@media (max-width: 1600px) and (orientation: landscape) {
+    .search-results-container1 {
+        max-height: 450px !important;
+
+    }
+}
+
 @media (max-width: 768px) {
 
     #selectDiv{
