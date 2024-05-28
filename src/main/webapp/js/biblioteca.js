@@ -1476,6 +1476,10 @@ class Biblioteca {
         } else {
         }
     }
+    removeEmojiCodes(text) {
+        const regex = /\[e-[a-f0-9]+\]/gi;
+        return text.replace(regex, '');
+    }
     exportarAPDF = async (indicesSeleccionados) => {
         const spinner = this.dom.querySelector("#spinner-exportar");
         spinner.style.display = 'block';
@@ -1525,15 +1529,17 @@ class Biblioteca {
             }
             const espacioDisponible = margenDerecha - (margenIzquierda + imagenAncho);
             const titulo = noticia.titulo.replace(/(\r\n|\n|\r)/gm, ' ');
+            const updatedTitulo = this.removeEmojiCodes(titulo);
             doc.setFontSize(12);
             doc.setFontStyle('bold');
-            const lineasTitulo = doc.splitTextToSize(titulo, espacioDisponible);
+            const lineasTitulo = doc.splitTextToSize(updatedTitulo, espacioDisponible);
             const numLineasTitulo = lineasTitulo.length;
             doc.text(lineasTitulo, margenIzquierda + imagenAncho + 0.2, currentY + 0.1);
             const descripcion = noticia.descripcion.replace(/(\r\n|\n|\r)/gm, ' ');
+            const updated = this.removeEmojiCodes(descripcion);
             doc.setFontSize(10);
             doc.setFontStyle('normal');
-            const descripcionLineas = doc.splitTextToSize(descripcion, espacioDisponible);
+            const descripcionLineas = doc.splitTextToSize(updated, espacioDisponible);
             doc.text(descripcionLineas, margenIzquierda + imagenAncho + 0.2, currentY + numLineasTitulo * 0.2 + 0.1);
             const infoAdicional = `Fecha: ${noticia.fecha}  Fuente: ${noticia.fuente}  Prioridad: ${noticia.prioridad}`;
             doc.setFontSize(10);
