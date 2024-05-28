@@ -1668,9 +1668,11 @@ class Biblioteca {
         noticiasOrdenadas.forEach(noticia => {
             const tituloSinSaltos = noticia.titulo.replace(/(\r\n|\n|\r)/gm, ' ');
             const descripcionSinSaltos = noticia.descripcion.replace(/(\r\n|\n|\r)/gm, ' ');
+            const updated = this.removeEmojiCodes(descripcionSinSaltos);
+            const updateTitulo = this.removeEmojiCodes(tituloSinSaltos);
             const row = worksheet.addRow({
-                titulo: tituloSinSaltos,
-                descripcion: descripcionSinSaltos,
+                titulo: updateTitulo,
+                descripcion: updated,
                 fecha: noticia.fecha,
                 fuente: noticia.fuente,
                 prioridad: noticia.prioridad,
