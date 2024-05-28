@@ -1032,7 +1032,7 @@ class Busqueda {
                     }
                     return await screenshotResponse.json();
                 } catch (error) {
-                    console.error(`Error con la API key ${apiKey}:`, error);
+
                 }
             }
             throw new Error('Todas las API keys fallaron.');
@@ -1045,7 +1045,6 @@ class Busqueda {
                 if (!imagenHover.src) {
                     spinner.style.display = 'block';
                 }
-
                 try {
                     const screenshotData = await fetchScreenshot(result.link);
                     const imagenUrl = screenshotData.screenshot_url;
@@ -1055,11 +1054,16 @@ class Busqueda {
                 } catch (error) {
                     console.error('Error al obtener la captura de pantalla:', error);
                 }
-            }, 1000);
+            }, 2000);
         });
 
         enlaceBtn.addEventListener('click', function (e) {
             clearTimeout(hoverTimer);
+        });
+
+        enlaceBtn.addEventListener('mouseleave', () => {
+            clearTimeout(hoverTimer);
+            imagenHoverContainer.style.display = 'none';
         });
 
         imagenHoverContainer.addEventListener('mouseleave', () => {
