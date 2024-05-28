@@ -1,4 +1,4 @@
-const version = "1.0.6";
+const version = "1.0.7";
 class Admin {
     dom;
 
