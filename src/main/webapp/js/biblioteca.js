@@ -1056,6 +1056,11 @@ class Biblioteca {
         }
         return true;
     }
+
+    replaceCodeWithEmoji(str) {
+        const regex = /\[e-([a-f0-9]+)\]/g;
+        return str.replace(regex, (match, hexCode) => String.fromCodePoint(parseInt(hexCode, 16)));
+    }
     renderizarNoticias = () => {
         const bordeColores = ['#1c2858', '#cdab68'];
         const noticiasCoincidentes = document.getElementById('noticiasBiblioteca');
@@ -1072,6 +1077,8 @@ class Biblioteca {
             const {id, titulo, descripcion, prioridad, fuente, enlace, imagen, fechaGuardado, fecha} = noticia;
             const idNoticia = noticia.id;
             const etiquetas = noticia.etiquetas;
+            const updated = this.replaceCodeWithEmoji(descripcion);
+            const tituloEmoji = this.replaceCodeWithEmoji(titulo);
             const fechaDate = new Date(fechaGuardado);
             const fechaFormateada = fechaDate.toLocaleDateString();
             const colorBorde = bordeColores[index % bordeColores.length];
@@ -1083,11 +1090,10 @@ class Biblioteca {
                 <img src="${imagen}" class="card-img-top card-img-custom" alt="" 
                 data-alternative="${imagen},images/default.png" 
                 onerror="loadAlternative(this, this.getAttribute('data-alternative').split(/,/)); this.classList.add('card-img-top', 'card-img-custom');">
-              
                 <div class="card-body">
                     <div class="text-section-Biblioteca">
-                        <h5 class="card-title fw-bold">${titulo}</h5>
-                        <p class="card-text descripcion">${descripcion}</p>
+                        <h5 class="card-title fw-bold">${tituloEmoji}</h5>
+                        <p class="card-text descripcion">${updated}</p>
                         <div class="pill-container"></div> 
                     </div>
                     <div class="check-container">
