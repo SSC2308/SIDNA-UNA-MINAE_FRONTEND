@@ -1065,7 +1065,6 @@ class Busqueda {
             clearTimeout(hoverTimer);
             imagenHoverContainer.style.display = 'none';
         });
-
         imagenHoverContainer.addEventListener('mouseleave', () => {
             clearTimeout(hoverTimer);
             imagenHoverContainer.style.display = 'none';
