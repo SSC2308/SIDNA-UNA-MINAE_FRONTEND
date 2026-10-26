@@ -472,15 +472,15 @@ class Busqueda {
                 )
             ]);
         };
-        const corsProxyUrl = 'https://corsproxy.io/?';
-        let response = await fetch(corsProxyUrl + apiUrl);
-        if (response.status === 429) {
+        let response = await fetchConProxy(apiUrl, { soloBackend: true });
+        let searchData = await response.json();
+        if (response.status === 429 || errorDeClaveSerpApi(searchData)) {
             const newApiKey = await this.obtenerSiguienteApiKey();
             const newApiUrl = this.construirApiUrl('costa rica medio ambiente y energia', 'qdr:m', newApiKey, pagina);
-            response = await fetch(corsProxyUrl + newApiUrl);
+            response = await fetchConProxy(newApiUrl, { soloBackend: true });
+            searchData = await response.json();
         }
-        const searchData = await response.json();
-        const newsResults = searchData.news_results;
+        const newsResults = searchData.news_results || [];
         if (pagina === 1) {
             try {
                 const externalJsonUrl = 'https://ssc2308.github.io/newsJSON/news.json';
@@ -542,7 +542,7 @@ class Busqueda {
                 }
                 let imageUrl = '';
                 const proxyUrl1 = `${backend}/proxy?url=`;
-                const proxyUrl2 = 'https://corsproxy.io/?';
+                const proxyUrl2 = proxiesPublicos[0];
                 try {
                     const encodedLink = encodeURIComponent(result.link);
                     let success = false;
@@ -800,7 +800,6 @@ class Busqueda {
     }
 
     construirApiUrl(keyword, tiempoQuery, apiKey, numeroPag) {
-        const encodedKeyword = encodeURI(keyword);
         const resultsPerPage = 25;
         let inicio;
 
@@ -809,16 +808,29 @@ class Busqueda {
         } else {
             inicio = 0;
         }
-        const apiUrl = `https://serpapi.com/search?api_key=${apiKey}&q=${encodedKeyword}&location=Costa%20Rica&google_domain=google.co.cr&gl=cr&lr=lang_es&hl=es&tbm=nws&tbs=sbd:1${tiempoQuery ? `,${tiempoQuery}` : ''}&num=${resultsPerPage}&start=${inicio}`;
-        return encodeURI(apiUrl);
+        // URLSearchParams codifica cada valor una sola vez; antes encodeURI se aplicaba dos veces y SerpAPI rechazaba "Costa%20Rica"
+        const params = new URLSearchParams({
+            api_key: apiKey,
+            q: keyword,
+            location: 'Costa Rica',
+            google_domain: 'google.co.cr',
+            gl: 'cr',
+            lr: 'lang_es',
+            hl: 'es',
+            tbm: 'nws',
+            tbs: `sbd:1${tiempoQuery ? `,${tiempoQuery}` : ''}`,
+            num: resultsPerPage,
+            start: inicio
+        });
+        return `https://serpapi.com/search?${params}`;
     }
     async obtenerDatosApi(apiUrl) {
-        const corsProxyUrl = 'https://corsproxy.io/?';
-        const response = await fetch(corsProxyUrl + apiUrl);
-        if (response.status === 429) {
+        const response = await fetchConProxy(apiUrl, { soloBackend: true });
+        const data = await response.json();
+        if (response.status === 429 || errorDeClaveSerpApi(data)) {
             throw new Error('Too Many Requests');
         }
-        return await response.json();
+        return data;
     }
 
     mostrarMensajeNoNoticias() {
@@ -865,26 +877,11 @@ class Busqueda {
     async obtenerImageUrl(result) {
         let imageUrl = '';
         try {
-            const proxyUrl1 = `${backend}/proxy?url=`;
-            const proxyUrl2 = 'https://corsproxy.io/?';
-            try {
-                const newsResponse = await fetch(proxyUrl2 + result.link);
-                const newsHtml = await newsResponse.text();
-                const newsDocument = new DOMParser().parseFromString(newsHtml, 'text/html');
-                const ogImage = newsDocument.querySelector('meta[property="og:image"]');
-                imageUrl = ogImage ? ogImage.getAttribute('content') : result.thumbnail;
-            } catch (error1) {
-                console.error(`Error al obtener datos de noticia con el primer proxy (${result.link}):`, error1);
-                try {
-                    const newsResponse2 = await fetch(proxyUrl1 + result.link);
-                    const newsHtml2 = await newsResponse2.text();
-                    const newsDocument2 = new DOMParser().parseFromString(newsHtml2, 'text/html');
-                    const ogImage2 = newsDocument2.querySelector('meta[property="og:image"]');
-                    imageUrl = ogImage2 ? ogImage2.getAttribute('content') : result.thumbnail;
-                } catch (error2) {
-                    console.error(`Error al obtener datos de noticia con el segundo proxy (${result.link}):`, error2);
-                }
-            }
+            const newsResponse = await fetchConProxy(result.link);
+            const newsHtml = await newsResponse.text();
+            const newsDocument = new DOMParser().parseFromString(newsHtml, 'text/html');
+            const ogImage = newsDocument.querySelector('meta[property="og:image"]');
+            imageUrl = ogImage ? ogImage.getAttribute('content') : result.thumbnail;
         } catch (error) {
             console.error(`Error al obtener datos de noticia (${result.link}):`, error);
         }

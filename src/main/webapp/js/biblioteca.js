@@ -479,16 +479,9 @@ class Biblioteca {
     }
 
     async solicitarDatos(url) {
-        const proxyUrl1 = `${backend}/proxy?url=`;
-        const proxyUrl2 = 'https://corsproxy.io/?';
         try {
-            const response1 = await fetch(proxyUrl2 + url);
-            if (!response1.ok) {
-                const response2 = await fetch(proxyUrl1 + url);
-                this.procesarRespuesta(response2);
-            } else {
-                this.procesarRespuesta(response1);
-            }
+            const response = await fetchConProxy(url);
+            this.procesarRespuesta(response);
         } catch (error) {
             console.error('Error al obtener los datos:', error);
         }
@@ -1412,24 +1405,14 @@ class Biblioteca {
         const enlace = document.getElementById('enlace').value;
         if (this.verificarCamposLlenados()) {
             try {
-                const proxyUrl1 = `${backend}/proxy?url=`;
-                const proxyUrl2 = 'https://corsproxy.io/?';
-                const newsResponse1 = await fetch(proxyUrl1 + enlace);
-                const newsHtml1 = await newsResponse1.text();
-                const newsDocument1 = new DOMParser().parseFromString(newsHtml1, 'text/html');
-                const ogImage1 = newsDocument1.querySelector('meta[property="og:image"]');
-                if (ogImage1) {
-                    imageUrl = ogImage1.getAttribute('content');
+                const newsResponse = await fetchConProxy(enlace);
+                const newsHtml = await newsResponse.text();
+                const newsDocument = new DOMParser().parseFromString(newsHtml, 'text/html');
+                const ogImage = newsDocument.querySelector('meta[property="og:image"]');
+                if (ogImage) {
+                    imageUrl = ogImage.getAttribute('content');
                 } else {
-                    const newsResponse2 = await fetch(proxyUrl2 + enlace);
-                    const newsHtml2 = await newsResponse2.text();
-                    const newsDocument2 = new DOMParser().parseFromString(newsHtml2, 'text/html');
-                    const ogImage2 = newsDocument2.querySelector('meta[property="og:image"]');
-                    if (ogImage2) {
-                        imageUrl = ogImage2.getAttribute('content');
-                    } else {
-                        console.error('No se pudo encontrar una imagen en ninguno de los proxies.');
-                    }
+                    console.error('No se pudo encontrar una imagen en la noticia.');
                 }
                 this.entity['imagen'] = imageUrl;
             } catch (error) {
@@ -1985,12 +1968,12 @@ class Biblioteca {
 
     async obtenerImagenBase64(url) {
         const proxyUrls = [
-            'https://corsproxy.io/?',
-            `${backend}/proxy/img?url=`
+            `${backend}/proxy/img?url=`,
+            ...proxiesPublicos
         ];
         for (const proxyUrl of proxyUrls) {
             try {
-                const response = await fetch(proxyUrl + url);
+                const response = await fetch(proxyUrl + encodeURIComponent(url));
                 if (!response.ok) {
                     throw new Error('Error en la solicitud');
                 }

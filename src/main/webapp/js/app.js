@@ -1,5 +1,35 @@
 const backend = "http://localhost:9090/backend";
 
+// Proxies públicos de respaldo: solo para páginas e imágenes de noticias, nunca para URLs que llevan claves de API.
+const proxiesPublicos = [
+    'https://api.allorigins.win/raw?url=',
+    'https://api.codetabs.com/v1/proxy?quest='
+];
+
+// Intenta primero el proxy propio del backend y, si falla, los públicos (salvo soloBackend).
+async function fetchConProxy(url, { imagen = false, soloBackend = false } = {}) {
+    const proxies = [`${backend}/proxy${imagen ? '/img' : ''}?url=`];
+    if (!soloBackend) {
+        proxies.push(...proxiesPublicos);
+    }
+    for (const proxy of proxies) {
+        try {
+            const response = await fetch(proxy + encodeURIComponent(url));
+            if (response.ok) {
+                return response;
+            }
+        } catch (error) {
+            console.warn(`Proxy no disponible (${proxy}):`, error);
+        }
+    }
+    throw new Error(`Ningún proxy pudo obtener ${url}`);
+}
+
+// SerpAPI responde 200 con un campo "error" cuando la clave se queda sin búsquedas o es inválida.
+function errorDeClaveSerpApi(data) {
+    return /run out|limit|invalid api key/i.test((data && data.error) || '');
+}
+
 class App {
     dom;
     modal;
